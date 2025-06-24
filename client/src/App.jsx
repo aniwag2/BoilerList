@@ -1,24 +1,22 @@
-import './App.css';
-import { useState, useEffect } from 'react';
-
-// functions
-import { getTest }  from "./functions/test";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import './App.css'; // Keep your existing App.css
+import Register from './pages/Register';
+import Home from './pages/Home';
 
 function App() {
-  const [data, setData] = useState("Hello World");
-
-  useEffect(() => {
-    getTest()
-      .then((res) => {
-        setData(res.message);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
   return (
-    <div className="App">
-      <h1>{data}</h1>
-    </div>
+    <Router>
+      <div className="App">
+        
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          {/* Add other routes here */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

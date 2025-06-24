@@ -18,14 +18,18 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // middleware
 app.use(morgan("dev"));
-app.use(cors({origin: true, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json()); // Essential for parsing JSON request bodies
 
 // routes
 const testRoutes = require("./routes/test");
+const authRoutes = require("./routes/auth"); // Import your authentication routes
+
 app.use("/", testRoutes);
+app.use("/api/auth", authRoutes); // All authentication routes will be prefixed with /api/auth
 
 // port
-const port = process.env.PORT;
+const port = process.env.PORT || 8000; // Added a fallback port if process.env.PORT is not set
 
 // listener
 const server = app.listen(port, () =>
