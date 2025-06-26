@@ -24,9 +24,11 @@ app.use(express.json()); // Essential for parsing JSON request bodies
 // routes
 const testRoutes = require("./routes/test");
 const authRoutes = require("./routes/auth"); // Import your authentication routes
+const uploadRoutes = require("./routes/upload"); // Import your upload routes
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes); // All authentication routes will be prefixed with /api/auth
+app.use("/api/upload", uploadRoutes); // All routes prefixed with /api/upload will be handled by the routes in uploadRoutes
 
 // port
 const port = process.env.PORT || 8000; // Added a fallback port if process.env.PORT is not set
