@@ -1,35 +1,63 @@
+/* Purdue Gold and Black Colors - Consider moving these to client/src/index.css for app-wide access */
+:root {
+    --purdue-gold: #c1a366; /* A common Purdue gold hex code */
+    --purdue-black: #000000;
+}
+
 .home-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #e9ecef;
-    padding: 20px;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically if enough space */
+    min-height: 100vh; /* Take full viewport height */
+    background-color: var(--purdue-black); /* Solid black background */
+    padding: 20px; /* Add some padding around the edges */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+.purdue-logo {
+    width: 150px; /* Adjust size as needed, slightly larger for home page prominence */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 30px; /* Space below the logo */
 }
 
 .home-container h1 {
-    color: #333;
-    margin-bottom: 15px;
+    color: var(--purdue-gold); /* Gold color for the BOILERLIST title */
+    font-size: 3em; /* Larger font size */
+    font-weight: bold; /* Bold text */
+    margin-bottom: 50px; /* More space below the title before buttons */
+    letter-spacing: 4px; /* Pronounced letter spacing */
+    text-transform: uppercase; /* Ensure it's uppercase */
+    font-family: 'Arial', sans-serif; /* A strong sans-serif font, consistent with Register */
 }
 
-.home-container p {
-    color: #666;
-    margin-bottom: 30px;
-    font-size: 1.1em;
+/* Styling for the Link components to control button layout */
+.home-button-link {
+    text-decoration: none; /* Remove underline from Link */
+    width: 100%; /* Take full width of the container */
+    max-width: 300px; /* Max width for buttons, adjust as needed */
+    margin-bottom: 5px; /* Space between the two buttons */
 }
 
-.home-container .register-button {
-    padding: 12px 25px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.2em;
+/* Styling for the actual buttons */
+.home-action-button {
+    width: 100%; /* Make button fill its parent link's width */
+    padding: 18px 20px; /* Generous padding */
+    background-color: var(--purdue-black); /* Black background */
+    color: var(--purdue-gold); /* Gold text */
+    border: 2px solid var(--purdue-gold); /* Gold border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.2em; /* Consistent font size */
+    font-weight: bold; /* Bold text */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 2px; /* Slight letter spacing */
+    font-family: 'Arial', sans-serif;
 }
 
-.home-container .register-button:hover {
-    background-color: #218838;
+.home-action-button:hover {
+    background-color: var(--purdue-gold); /* Gold background on hover */
+    color: var(--purdue-black); /* Black text on hover */
+    border-color: var(--purdue-black); /* Black border on hover */
 }
