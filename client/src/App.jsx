@@ -1,14 +1,14 @@
 // client/src/App.jsx
-import React, { useContext } from 'react'; // <--- NEW: Import useContext
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Register from './pages/Register';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Listings from './pages/Listings';
-import Profile from './pages/Profile'; // Assuming you'll create this page
-import Navbar from './components/Navbar'; // <--- NEW: Import Navbar
-import { UserContext, UserProvider } from './UserContext'; // <--- Ensure UserContext is imported
+import Profile from './pages/Profile';
+import Navbar from './components/Navbar';
+import { UserContext, UserProvider } from './UserContext';
 
 // Helper component to wrap routes that need the Navbar
 const LayoutWithNavbar = ({ children }) => {
