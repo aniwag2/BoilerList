@@ -1,0 +1,90 @@
+/* client/src/components/Navbar.css */
+
+/* Re-use colors from :root if you define them globally in index.css */
+/* Otherwise, define them here for Navbar specific use */
+:root {
+    --purdue-gold: #c28e0e;
+    --purdue-black: #000000;
+}
+
+.navbar {
+    background-color: var(--purdue-black);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between; /* Pushes brand to left, links to right */
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in width */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    position: sticky; /* Make it stick to the top */
+    top: 0;
+    z-index: 1000; /* Ensure it's above other content */
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* Remove underline from link */
+    gap: 10px; /* Space between icon and text */
+}
+
+.navbar-icon {
+    height: 40px; /* Adjust size as needed */
+    width: auto;
+}
+
+.navbar-text {
+    height: 25px; /* Adjust size to fit next to icon */
+    width: auto;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 15px; /* Space between navigation buttons */
+}
+
+.navbar-button {
+    background-color: transparent;
+    color: var(--purdue-gold);
+    border: 2px solid var(--purdue-gold);
+    padding: 8px 15px;
+    border-radius: 8px; /* Slightly rounded corners */
+    text-decoration: none; /* For Link components */
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Arial', sans-serif; /* Consistent font */
+    display: flex; /* Ensures consistent padding/alignment */
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-button:hover {
+    background-color: var(--purdue-gold);
+    color: var(--purdue-black);
+    border-color: var(--purdue-black);
+}
+
+.logout-button {
+    /* No specific styles needed for logout button unless desired */
+}
+
+/* Basic Responsive Adjustments (Optional but Recommended) */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 10px;
+    }
+    .navbar-links {
+        margin-top: 10px;
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        justify-content: center;
+    }
+    .navbar-button {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+}

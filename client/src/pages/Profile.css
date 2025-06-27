@@ -1,0 +1,80 @@
+/* client/src/pages/Profile.css */
+
+/* Re-use colors from :root if you define them globally in index.css */
+/* Otherwise, define them here */
+:root {
+    --purdue-gold: #c28e0e;
+    --purdue-black: #000000;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Adjust min-height to account for Navbar height if it's sticky */
+    min-height: calc(100vh - 70px); /* Assuming Navbar height is ~70px */
+    background-color: var(--purdue-black);
+    color: var(--purdue-gold);
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    text-align: center;
+}
+
+.profile-title {
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 40px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+    color: var(--purdue-gold);
+}
+
+.profile-details {
+    background-color: #1a1a1a; /* Slightly lighter black for the details box */
+    border: 2px solid var(--purdue-gold);
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.profile-item {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    display: flex; /* Use flexbox for label-value alignment */
+    justify-content: center; /* Center the content within each item */
+    gap: 10px; /* Space between label and value */
+    color: #fff; /* White text for contrast on darker background */
+}
+
+.profile-item:last-child {
+    margin-bottom: 0; /* No margin after the last item */
+}
+
+.profile-label {
+    font-weight: bold;
+    color: var(--purdue-gold); /* Gold color for labels */
+}
+
+.profile-not-logged-in {
+    font-size: 1.2em;
+    color: #fff; /* White text for visibility */
+    margin-top: 50px;
+}
+
+/* Basic Responsive Adjustments */
+@media (max-width: 768px) {
+    .profile-details {
+        padding: 20px;
+        max-width: 90%;
+    }
+    .profile-title {
+        font-size: 1.8em;
+    }
+    .profile-item {
+        flex-direction: column; /* Stack label and value on small screens */
+        gap: 5px;
+    }
+}
