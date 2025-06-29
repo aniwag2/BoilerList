@@ -10,7 +10,7 @@ async function uploadItem(req, res) {
 
     //Check if all fields are present
     if (!name || !price || !description || !category || !image) {
-        res.status(400).json({ message: 'Please enter all fields' });
+        return res.status(400).json({ message: 'Please enter all fields' });
     }
 
     try {

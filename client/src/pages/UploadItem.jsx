@@ -1,11 +1,30 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import PurdueLogo from "../assets/PurdueLogo.png";
-import "./Register.css";
+import "./UploadItem.css";
 import { UserContext } from "../UserContext";
+import { useDropzone } from "react-dropzone";
 
 const UploadItem = () => {
+
+    // Handles drag and drop events of image
+    const onDrop = (acceptedFiles) => {
+
+        if (acceptedFiles && acceptedFiles[0]) {
+            setPreview(URL.createObjectURL(acceptedFiles[0]));
+            setImage(acceptedFiles[0]);
+        }
+
+    }
+
+    const { acceptedFiles, getRootProps, getInputProps, isDragActive } = useDropzone({
+        accept: {
+            'image/*': ['.png', '.jpg', '.jpeg'],
+        },
+        onDrop,
+        multiple: false,
+    });
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -13,6 +32,8 @@ const UploadItem = () => {
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(null);
     const { user } = useContext(UserContext);
+    const [preview, setPreview] = useState(null);
+
 
     const handleSubmit = async (e) => {
         //prevents reload of page
@@ -31,14 +52,16 @@ const UploadItem = () => {
             formData.append("category", category);
             formData.append("email", email);
 
+            console.log(name, description, price, category, email, image);
+
             const uploadRes = await fetch("http://localhost:8080/api/upload/uploadItem", {
                 method: "POST",
                 body: formData,
             });
             
 
-            if (uploadRes.error) {
-                toast.error("Error uploading item");
+            if (!uploadRes.ok) {
+                toast.error("Error uploading item" + uploadRes.statusText);
                 return;
             }
 
@@ -49,20 +72,24 @@ const UploadItem = () => {
     }
 
     return (
-        <div className="register-container">
+        <div className="upload-container">
             <img src={PurdueLogo} alt="Purdue Logo" className="purdue-logo" />
-            <h1>Upload Item</h1>
+            <h1 className="upload-title">Upload Item</h1>
             <form onSubmit={handleSubmit}>
 
-                <div className="form-group">
-                    
-                        <input
-                            type="file"
-                            placeholder="Item Image"
-                            onChange={(e) => setImage(e.target.files[0])}
-                            required
-                        />
+                    {/* Handles drag and drop events */}
+                    <div className="upload-image-container" {...getRootProps()}>
+                        {/* Handles file selection */}
+                        <input {...getInputProps()} onChange={(e) => {
+                            setImage(e.target.files[0]);
+                            setPreview(URL.createObjectURL(e.target.files[0]));
+                        }} />
+                        {isDragActive ?
+                        <p className="upload-image-text">Drop the image here...</p> :
+                        <p className="upload-image-text">Drag and drop an image here, or click to select one</p>}
+                        {preview && <img src={preview} alt="Uploaded" className="uploaded-image" />}
                     </div>
+
                     <div className="form-group">
                         <input
                             type="text"
@@ -101,6 +128,7 @@ const UploadItem = () => {
                     </div>
                 <button type="submit">Upload</button>
             </form>
+            <ToastContainer />
         </div>
     );
 };
