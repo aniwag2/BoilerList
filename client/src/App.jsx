@@ -9,6 +9,7 @@ import Listings from './pages/Listings';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import { UserContext, UserProvider } from './UserContext';
+import UploadItem from './pages/UploadItem';
 
 // Helper component to wrap routes that need the Navbar
 const LayoutWithNavbar = ({ children }) => {
@@ -48,6 +49,14 @@ function App() {
                             element={
                                 <LayoutWithNavbar>
                                     <Profile />
+                                </LayoutWithNavbar>
+                            }
+                        />
+                        <Route
+                            path="/uploaditem"
+                            element={
+                                <LayoutWithNavbar>
+                                    <UploadItem />
                                 </LayoutWithNavbar>
                             }
                         />

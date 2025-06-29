@@ -1,15 +1,16 @@
 const Item = require('../models/Item');
+const User = require('../models/User');
 
 
 async function uploadItem(req, res) {
 
     //Get the item details from the request body
-    const { name, price, description, category } = req.body;
+    const { name, price, description, category, email } = req.body;
     const image = req.file;
 
     //Check if all fields are present
     if (!name || !price || !description || !category || !image) {
-        res.status(400).json({ message: 'Please enter all fields' });
+        return res.status(400).json({ message: 'Please enter all fields' });
     }
 
     try {
@@ -18,13 +19,10 @@ async function uploadItem(req, res) {
             price,
             description,
             category,
+            email,
             image: {
-                originalName: image.originalname,
                 contentType: image.mimetype,
-                path: image.path,
-                size: image.size,
-                filename: image.filename,
-                uploadedAt: new Date()
+                data: image.buffer,
             } 
         });
 

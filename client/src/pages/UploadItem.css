@@ -1,0 +1,160 @@
+:root {
+    --purdue-gold: #c1a366;
+    --purdue-black: #000000;
+}
+
+.upload-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically if enough space */
+    min-height: 100vh; /* Take full viewport height */
+    background-color: var(--purdue-black); /* Solid black background */
+    padding: 20px; /* Add some padding around the edges */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    overflow-y: auto; /* Allow scrolling if content is too tall */
+}
+
+.upload-title {
+    color: var(--purdue-gold); /* Gold color for the REGISTER title */
+    font-size: 2.5em; /* Larger font size */
+    font-weight: bold; /* Bold text */
+    margin-bottom: 40px; /* Space below the title */
+}
+
+.upload-image-container {
+    width: 400px;
+    height: 100%;
+    min-height: 200px;
+    border: 2px dashed var(--purdue-gold);
+    border-radius: 10px;
+    text-align: center;
+    line-height: 100px; /* Vertically center content */
+    cursor: pointer;
+    margin-bottom: 25px; /* Spacing between input fields */
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.upload-image-text {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--purdue-gold);
+    text-transform: uppercase; /* Ensure it's uppercase */
+    font-family: 'Arial', sans-serif; /* A strong sans-serif font */
+    letter-spacing: 1px; /* Slight letter spacing */
+}
+
+.uploaded-image {
+    max-width: 90%;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Show the whole image, not cropped */
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+.purdue-logo {
+    width: 120px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 30px; /* Space below the logo */
+}
+
+.upload-container h2 {
+    color: var(--purdue-gold); /* Gold color for the REGISTER title */
+    font-size: 2.5em; /* Larger font size */
+    font-weight: bold; /* Bold text */
+    margin-bottom: 40px; /* Space below the title */
+    letter-spacing: 2px; /* Slight letter spacing */
+    text-transform: uppercase; /* Ensure it's uppercase */
+    font-family: 'Arial', sans-serif; /* A strong sans-serif font */
+    /* You might want to import a specific font if you have one */
+}
+
+.upload-container form {
+    background: transparent; /* No background for the form itself */
+    padding: 0; /* Remove padding as inputs will be styled directly */
+    border-radius: 0; /* No border-radius for the form container */
+    box-shadow: none; /* No shadow */
+    width: 100%;
+    max-width: 400px; /* Max width for the form elements */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group {
+    margin-bottom: 25px; /* Spacing between input fields */
+    width: 100%; /* Take full width of the form container */
+}
+
+.form-group label {
+    display: none; /* Hide labels as we're using placeholders */
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: calc(100% - 40px); /* Account for padding and border */
+    padding: 18px 20px; /* Generous padding */
+    border: 2px solid var(--purdue-gold); /* Gold border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.2em; /* Larger text inside input */
+    color: var(--purdue-gold); /* Gold text color when typing */
+    background-color: var(--purdue-black); /* Black background for input fields */
+    outline: none; /* Remove default focus outline */
+    box-shadow: none; /* No input shadow */
+    font-family: 'Arial', sans-serif;
+}
+
+/* Placeholder styling */
+.form-group input::placeholder {
+    color: var(--purdue-gold); /* Gold color for placeholders */
+    opacity: 0.7; /* Make them slightly less opaque than typed text */
+    font-weight: bold; /* Make placeholders bold */
+    text-transform: uppercase; /* Match the design */
+    letter-spacing: 1px;
+}
+
+.form-group input:focus {
+    border-color: #ffd700; /* Slightly brighter gold on focus */
+}
+
+.upload-container button {
+    width: 100%;
+    max-width: 400px; /* Match input field width */
+    padding: 18px 20px; /* Generous padding */
+    background-color: var(--purdue-black); /* Black background */
+    color: var(--purdue-gold); /* Gold text */
+    border: 2px solid var(--purdue-gold); /* Gold border */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1.2em; /* Match input font size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 2px; /* Slight letter spacing */
+    font-family: 'Arial', sans-serif;
+    margin-top: 20px; /* Space above the button */
+}
+
+.upload-container button:hover {
+    background-color: var(--purdue-gold); /* Gold background on hover */
+    color: var(--purdue-black); /* Black text on hover */
+    border-color: var(--purdue-black); /* Black border on hover */
+}
+
+/* Error Message Styling */
+.error-message {
+    color: #ff4d4d; /* A soft red for errors */
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.95em;
+    font-weight: bold;
+}

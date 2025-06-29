@@ -13,14 +13,14 @@ const ItemSchema = new Schema({
         required: true
     },
     image: {
-        originalName: String,
         contentType: String,
-        path: String,
-        size: Number,
-        filename: String,
-        uploadedAt: Date
+        data: Buffer,
     },
     description: {
+        type: String,
+        required: true
+    },
+    email: {
         type: String,
         required: true
     },

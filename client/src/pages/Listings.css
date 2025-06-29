@@ -1,0 +1,137 @@
+.listings-root {
+  padding: 10px;
+  background: #111;
+  min-height: 100vh;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.listing-card {
+  border: 2px solid #c1a366;
+  border-radius: 10px;
+  background: #111;
+  color: #c1a366;
+  padding: 32px;
+  min-height: 320px;
+  max-width: 250px;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 18px;
+}
+
+.photo-box {
+  height: 100px;
+  background: #222;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.photo-box img {
+  max-height: 90px;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.price-badge {
+  background: #c1a366;
+  color: #111;
+  display: inline-block;
+  border-radius: 8px;
+  padding: 2px 10px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.listing-description {
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 200px;
+}
+
+.listing-btn {
+  margin-top: 12px;
+  background: transparent;
+  border: 2px solid #c1a366;
+  color: #c1a366;
+  border-radius: 8px;
+  padding: 8px 0;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #111;
+  border: 2px dashed #c1a366;
+  border-radius: 16px;
+  padding: 32px;
+  min-width: 320px;
+  color: #c1a366;
+  position: relative;
+}
+
+.modal-photo-box {
+  height: 120px;
+  background: #222;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.modal-photo-box img {
+  max-height: 110px;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.details-section {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.details-title {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.close-btn {
+  margin-top: 18px;
+  background: transparent;
+  border: 2px solid #c1a366;
+  color: #c1a366;
+  border-radius: 8px;
+  padding: 8px 0;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}

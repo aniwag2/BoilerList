@@ -28,6 +28,7 @@ function Navbar() {
             <div className="navbar-links">
                 <Link to="/profile" className="navbar-button">Profile</Link>
                 <Link to="/listings" className="navbar-button">Dashboard</Link> {/* Text says Dashboard */}
+                <Link to="/uploaditem" className="navbar-button">Upload Item</Link> {/* Text says Upload Item */}
                 <button onClick={handleLogout} className="navbar-button logout-button">Log out</button> {/* Text says Log out */}
             </div>
         </nav>

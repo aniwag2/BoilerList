@@ -3,14 +3,7 @@ const router = express.Router();
 
 // This keeps the image in the server in the uploadImages folder to maintain persistence
 const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploadImages/');
-    },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
+const storage = multer.memoryStorage();
 const uploadImage = multer({ storage: storage });
 
 const uploadController = require('../controllers/uploadController.js');
