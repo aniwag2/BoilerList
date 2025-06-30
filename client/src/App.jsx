@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import { UserContext, UserProvider } from './UserContext';
 import UploadItem from './pages/UploadItem';
+import Contact from './pages/Contact';
 
 // Helper component to wrap routes that need the Navbar
 const LayoutWithNavbar = ({ children }) => {
@@ -59,6 +60,14 @@ function App() {
                                     <UploadItem />
                                 </LayoutWithNavbar>
                             }
+                        />
+                        <Route
+                          path="/contact"
+                          element={
+                            <LayoutWithNavbar>
+                              <Contact />
+                            </LayoutWithNavbar>
+                          }
                         />
                         {/* Add more protected routes here, wrapped by LayoutWithNavbar */}
                     </Routes>
