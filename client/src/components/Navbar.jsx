@@ -1,7 +1,6 @@
-// client/src/components/Navbar.jsx
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserContext } from '../UserContext'; // Path to your UserContext
+import { UserContext } from '../UserContext'; 
 
 // Import the BoilerList images from assets
 import BoilerListIcon from '../assets/BoilerList-icon.png';
@@ -29,6 +28,7 @@ function Navbar() {
                 <Link to="/profile" className="navbar-button">Profile</Link>
                 <Link to="/listings" className="navbar-button">Dashboard</Link> {/* Text says Dashboard */}
                 <Link to="/uploaditem" className="navbar-button">Upload Item</Link> {/* Text says Upload Item */}
+                <Link to="/contact" className="navbar-button">Contact</Link> 
                 <button onClick={handleLogout} className="navbar-button logout-button">Log out</button> {/* Text says Log out */}
             </div>
         </nav>
