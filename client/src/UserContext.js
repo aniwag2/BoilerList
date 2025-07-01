@@ -5,40 +5,51 @@ import React, { createContext, useState, useEffect } from 'react';
 export const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
-    // Initialize user state from local storage on first load
     const [user, setUser] = useState(() => {
         try {
             const storedUser = localStorage.getItem('user');
-            // Parse storedUser only if it exists, otherwise it's null
-            return storedUser ? JSON.parse(storedUser) : null;
+            const storedToken = localStorage.getItem('token'); // <--- NEW: Get stored token
+            if (storedUser && storedToken) {
+                // Return both user data and token if available
+                return { ...JSON.parse(storedUser), token: storedToken };
+            }
+            return null;
         } catch (error) {
-            console.error("Failed to parse user from localStorage:", error);
+            console.error("Failed to parse user/token from localStorage:", error);
             // If parsing fails (e.g., malformed JSON), clear storage and return null
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             return null;
         }
     });
 
     // Update local storage whenever user state changes
     useEffect(() => {
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
+        if (user && user.token) { // <--- Store token as well
+            // Store user data WITHOUT the token to avoid storing sensitive data directly in user object in LS
+            localStorage.setItem('user', JSON.stringify({
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+            }));
+            localStorage.setItem('token', user.token); // Store token separately
         } else {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
         }
     }, [user]);
 
-    // Function to handle login: sets the user state with provided data
-    const login = (userData) => {
-        // userData should be an object containing user details from successful login
-        setUser(userData);
+    // Login function receives user data and token
+    const login = (userData, token) => { // <--- NEW: Accepts token
+        // Set user object with token
+        setUser({ ...userData, token });
     };
 
-    // Function to handle logout: clears the user state
+    // Logout function
     const logout = () => {
         setUser(null);
-        // In a real app, you might also want to clear any specific tokens
-        // or session data from cookies if you were using them.
+        // localStorage.removeItem('user'); // Handled by useEffect
+        // localStorage.removeItem('token'); // Handled by useEffect
     };
 
     return (

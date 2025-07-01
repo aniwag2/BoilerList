@@ -1,3 +1,4 @@
+// server/app.js
 // import modules
 const express = require("express");
 const mongoose = require("mongoose");
@@ -12,33 +13,40 @@ const app = express();
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    // useCreateIndex: true, // Deprecated in Mongoose 6+
+    // useFindAndModify: false, // Deprecated in Mongoose 6+
 })
 .then(() => console.log("DB CONNECTED"))
 .catch((err) => console.log("DB CONNECTION ERROR", err));
 
 // middleware
 app.use(morgan("dev"));
-app.use(cors({ origin: true, credentials: true }));
+// Configure CORS for credentials to be sent
+app.use(cors({
+    origin: 'http://localhost:3000', // Allow your frontend origin
+    credentials: true, // Allow cookies, authorization headers, etc.
+}));
 app.use(express.json()); // Essential for parsing JSON request bodies
 
 // routes
 const testRoutes = require("./routes/test");
-const authRoutes = require("./routes/auth"); // Import your authentication routes
-const uploadRoutes = require("./routes/upload"); // Import your upload routes
-const listingRoutes = require("./routes/listings"); // Import your listing routes
+const authRoutes = require("./routes/auth");
+const uploadRoutes = require("./routes/upload");
+const listingRoutes = require("./routes/listings");
 const feedbackRoutes = require("./routes/feedback");
 const reportRoutes = require("./routes/report");
-
+const userRoutes = require("./routes/user"); // <--- NEW: Import user routes
 
 app.use("/", testRoutes);
-app.use("/api/auth", authRoutes); // All authentication routes will be prefixed with /api/auth
-app.use("/api/upload", uploadRoutes); // All routes prefixed with /api/upload will be handled by the routes in uploadRoutes
-app.use("/api/listings", listingRoutes); // All routes prefixed with /api/listings will be handled by the routes in listingRoutes
-app.use("/api/feedback", feedbackRoutes); 
+app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/listings", listingRoutes);
+app.use("/api/feedback", feedbackRoutes);
 app.use("/api/report", reportRoutes);
+app.use("/api/user", userRoutes); // <--- NEW: Add user routes
 
 // port
-const port = process.env.PORT || 8000; // Added a fallback port if process.env.PORT is not set
+const port = process.env.PORT || 8080;
 
 // listener
 const server = app.listen(port, () =>

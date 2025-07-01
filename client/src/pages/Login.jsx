@@ -22,19 +22,19 @@ const Login = () => {
         setError(""); // Clear any previous error messages
 
         try {
-            const res = await apiLogin({ username, password }); // Use apiLogin
+            const res = await apiLogin({ username, password }); // apiLogin returns { success, user, token, message, error }
 
             if (res.error) {
                 // If API call had a server-side error (e.g., invalid credentials)
                 setError(res.message || "Incorrect username or password.");
-            } else if (res.user) { // <--- EXPECTING 'user' OBJECT HERE FROM BACKEND
+            } else if (res.user && res.token) { // <--- EXPECTING 'user' object AND 'token'
                 toast.success("Login successful!");
-                contextLogin(res.user); // <--- Use contextLogin, passing the full user object
+                contextLogin(res.user, res.token); // <--- Pass user object AND token to contextLogin
                 navigate("/listings"); // Redirect to dashboard
             } else {
-                // This case handles a successful API call that somehow didn't return a 'user' object
-                setError("Login succeeded but user data was missing from response. Please try again.");
-                console.error("Login API response missing user data:", res);
+                // This case handles a successful API call that somehow didn't return a 'user' or 'token' object
+                setError("Login succeeded but user data or token was missing. Please try again.");
+                console.error("Login API response missing user data or token:", res);
             }
         } catch (err) {
             // This catch block is for network errors or unhandled exceptions during the fetch
