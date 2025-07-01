@@ -1,137 +1,193 @@
+/* client/src/pages/Listings.css */
+
+/* --- Styles for ToggleButtonGroup and ToggleButtons (NEW) --- */
+
+/* You might consider adding a custom class to the <Box> wrapping the ToggleButtonGroup in Listings.jsx
+   e.g., <Box className="listings-filter-container" sx={{ my: 3, display: 'flex', justifyContent: 'center' }}>
+   And then use that class here: .listings-filter-container .MuiToggleButtonGroup-root { ... }
+   This prevents over-scoping the generic .MuiBox-root style.
+*/
+
+/* Style the ToggleButtonGroup itself */
+.MuiToggleButtonGroup-root {
+    background-color: var(--purdue-black); /* Dark background for the group */
+    border: 2px solid var(--purdue-gold); /* Gold border for the group */
+    border-radius: 8px; /* Rounded corners for the group */
+}
+
+/* Style individual ToggleButtons */
+.MuiToggleButton-root {
+    color: var(--purdue-gold) !important; /* Gold text for buttons */
+    border: 1px solid var(--purdue-gold) !important; /* Individual button borders */
+    text-transform: uppercase; /* Match your other buttons */
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    padding: 8px 15px;
+    transition: all 0.3s ease; /* Smooth transitions */
+    font-family: 'Arial', sans-serif; /* Consistent font */
+}
+
+/* Style for selected ToggleButton */
+.MuiToggleButton-root.Mui-selected {
+    background-color: var(--purdue-gold) !important; /* Gold background when selected */
+    color: var(--purdue-black) !important; /* Black text when selected */
+    border-color: var(--purdue-black) !important; /* Black border when selected */
+}
+
+/* Style for ToggleButton on hover */
+.MuiToggleButton-root:hover {
+    background-color: rgba(194, 142, 14, 0.2) !important; /* Slightly transparent gold on hover */
+    color: var(--purdue-gold) !important; /* Maintain gold text on hover */
+}
+
+/* Style for disabled ToggleButton (e.g., "My Favorites" when not logged in) */
+.MuiToggleButton-root.Mui-disabled {
+    opacity: 0.5 !important; /* Make it semi-transparent when disabled */
+    color: var(--purdue-gold) !important;
+    border-color: var(--purdue-gold) !important;
+    cursor: not-allowed !important;
+    background-color: var(--purdue-black) !important;
+}
+
+/* --- End ToggleButtonGroup Styles --- */
+
+
+/* --- Your existing Listings.css styles below --- */
+
 .listings-root {
-  padding: 10px;
-  background: #111;
-  min-height: 100vh;
+    padding: 10px;
+    background: #111; /* Or consider var(--purdue-black); for consistency */
+    min-height: 100vh;
 }
 
 .listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
 }
 
 .listing-card {
-  border: 2px solid #c1a366;
-  border-radius: 10px;
-  background: #111;
-  color: #c1a366;
-  padding: 32px;
-  min-height: 320px;
-  max-width: 250px;
-  min-width: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 18px;
+    border: 2px solid #c1a366; /* This is very close to --purdue-gold */
+    border-radius: 10px;
+    background: #111; /* Consider #fff or #f5f5f5 for cards if you want light cards, or a lighter shade of black */
+    color: #c1a366; /* Text color on card */
+    padding: 32px;
+    min-height: 320px;
+    max-width: 250px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 18px;
 }
 
 .photo-box {
-  height: 100px;
-  background: #222;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 20px;
+    height: 100px;
+    background: #222;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .photo-box img {
-  max-height: 90px;
-  max-width: 100%;
-  border-radius: 8px;
+    max-height: 90px;
+    max-width: 100%;
+    border-radius: 8px;
 }
 
 .price-badge {
-  background: #c1a366;
-  color: #111;
-  display: inline-block;
-  border-radius: 8px;
-  padding: 2px 10px;
-  font-weight: bold;
-  margin: 8px 0;
+    background: #c1a366;
+    color: #111;
+    display: inline-block;
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-weight: bold;
+    margin: 8px 0;
 }
 
 .listing-description {
-  font-size: 14px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 200px;
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 200px;
 }
 
 .listing-btn {
-  margin-top: 12px;
-  background: transparent;
-  border: 2px solid #c1a366;
-  color: #c1a366;
-  border-radius: 8px;
-  padding: 8px 0;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
+    margin-top: 12px;
+    background: transparent;
+    border: 2px solid #c1a366;
+    color: #c1a366;
+    border-radius: 8px;
+    padding: 8px 0;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
 }
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background: #111;
-  border: 2px dashed #c1a366;
-  border-radius: 16px;
-  padding: 32px;
-  min-width: 320px;
-  color: #c1a366;
-  position: relative;
+    background: #111;
+    border: 2px dashed #c1a366;
+    border-radius: 16px;
+    padding: 32px;
+    min-width: 320px;
+    color: #c1a366;
+    position: relative;
 }
 
 .modal-photo-box {
-  height: 120px;
-  background: #222;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 22px;
+    height: 120px;
+    background: #222;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 22px;
 }
 
 .modal-photo-box img {
-  max-height: 110px;
-  max-width: 100%;
-  border-radius: 8px;
+    max-height: 110px;
+    max-width: 100%;
+    border-radius: 8px;
 }
 
 .details-section {
-  font-size: 15px;
-  margin-bottom: 10px;
+    font-size: 15px;
+    margin-bottom: 10px;
 }
 
 .details-title {
-  font-weight: bold;
-  margin-top: 10px;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
 .close-btn {
-  margin-top: 18px;
-  background: transparent;
-  border: 2px solid #c1a366;
-  color: #c1a366;
-  border-radius: 8px;
-  padding: 8px 0;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
+    margin-top: 18px;
+    background: transparent;
+    border: 2px solid #c1a366;
+    color: #c1a366;
+    border-radius: 8px;
+    padding: 8px 0;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
 }

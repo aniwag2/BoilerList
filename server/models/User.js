@@ -1,3 +1,4 @@
+// server/models/User.js
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -5,24 +6,27 @@ const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true, // Ensure usernames are unique
-        trim: true,  // Remove whitespace from both ends of a string
-        minlength: 3 // Minimum length for username
+        unique: true,
+        trim: true,
+        minlength: 3
     },
     email: {
         type: String,
         required: true,
-        unique: true, // Ensure emails are unique
+        unique: true,
         trim: true,
-        lowercase: true, // Store emails in lowercase for consistency
-        match: [/.+@.+\..+/, 'Please enter a valid email address'] // Basic email regex validation
+        lowercase: true,
+        match: [/.+@.+\..+/, 'Please enter a valid email address']
     },
     password: {
         type: String,
         required: true,
-        minlength: 6 // Minimum length for password
+        minlength: 6
     },
-    // You can add more fields here, e.g., createdAt, updatedAt, role, etc.
+    favorites: [{ // <--- NEW: Array to store favorited Item _ids
+        type: Schema.Types.ObjectId,
+        ref: 'Item'
+    }],
     createdAt: {
         type: Date,
         default: Date.now
