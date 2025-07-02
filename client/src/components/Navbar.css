@@ -3,7 +3,7 @@
 /* Re-use colors from :root if you define them globally in index.css */
 /* Otherwise, define them here for Navbar specific use */
 :root {
-    --purdue-gold: #c28e0e;
+    --purdue-gold: #c1a366;
     --purdue-black: #000000;
 }
 
