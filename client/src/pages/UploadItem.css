@@ -25,9 +25,9 @@
 }
 
 .upload-image-container {
-    width: 100%;
-    height: 100%;
-    min-height: 200px;
+    width: 50%;
+    height: 50%;
+    min-height: 100px;
     border: 2px dashed var(--purdue-gold);
     border-radius: 10px;
     text-align: center;
@@ -90,7 +90,7 @@
     padding: 0; /* Remove padding as inputs will be styled directly */
     border-radius: 0; /* No border-radius for the form container */
     box-shadow: none; /* No shadow */
-    width: 100%;
+    width: 50%;
     min-width: 400px; /* Max width for the form elements */
     display: flex;
     flex-direction: column;
