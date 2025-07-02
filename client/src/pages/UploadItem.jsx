@@ -1,8 +1,8 @@
 import React, { useState, useContext, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import PurdueLogo from "../assets/PurdueLogo.png";
 import "./UploadItem.css";
+import { Select, FormControl, InputLabel, MenuItem, TextField } from "@mui/material";
 import { UserContext } from "../UserContext";
 import { useDropzone } from "react-dropzone";
 
@@ -14,6 +14,9 @@ const UploadItem = () => {
         if (acceptedFiles && acceptedFiles[0]) {
             setPreview(URL.createObjectURL(acceptedFiles[0]));
             setImage(acceptedFiles[0]);
+        }
+        else {
+            toast.error("Please select an image");
         }
 
     }
@@ -28,7 +31,7 @@ const UploadItem = () => {
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
+    const [price, setPrice] = useState(0);
     const [category, setCategory] = useState("");
     const [image, setImage] = useState(null);
     const { user } = useContext(UserContext);
@@ -91,40 +94,100 @@ const UploadItem = () => {
                     </div>
 
                     <div className="form-group">
+                        <h3 className="form-group-title">Item Name</h3>
                         <input
                             type="text"
-                            placeholder="Item Name"
+                            placeholder="Enter Item Name"
                             onChange={(e) => setName(e.target.value)}
                             value={name}
                             required
                         />
                     </div>
                     <div className="form-group">
+                        <h3 className="form-group-title">Description</h3>
                         <input
                             type="text"
-                            placeholder="Item Description"
+                            placeholder="Describe your item's conditions, features, etc."
                             onChange={(e) => setDescription(e.target.value)}
                             value={description}
                             required
                         />
                     </div>
                     <div className="form-group">
+                        <h3 className="form-group-title">Price ($)</h3>
                         <input
                             type="text"
-                            placeholder="Item Price"
-                            onChange={(e) => setPrice(e.target.value)}
+                            placeholder="0.00"
+                            onChange={(e) => {
+                                if (/^\d*\.?\d{0,2}$/.test(e.target.value)) {
+                                    setPrice(e.target.value);
+                                  }
+                            }
+                            }
                             value={price}
                             required
+                            
                         />
                     </div>
                     <div className="form-group">
-                        <input
-                            type="text"
-                            placeholder="Item Category"
-                            onChange={(e) => setCategory(e.target.value)}
-                            value={category}
-                            required
-                        />
+                        <h3 className="form-group-title">Item Category</h3>
+                        <FormControl fullWidth >
+                            <InputLabel>Category</InputLabel>
+                            <Select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="category-dropdown"
+                                displayEmpty
+                                sx={{
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                      border: 'none',
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        border: 'none',
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        border: 'none',
+                                    },
+                                    width: '100%',
+                                    height: '60px',
+                                    padding: '18px 20px',
+                                    backgroundColor: 'var(--purdue-black)',
+                                    color: 'var(--purdue-gold)',
+                                    border: '2px solid var(--purdue-gold)',
+                                    borderRadius: '10px',
+                                    fontSize: '1.2em',
+                                    letterSpacing: '1px',
+                                }}
+                                renderValue={(selected) => {
+                                    if (!selected) {
+                                      return <span style={
+                                        { 
+                                            color: "var(--purdue-gold)",
+                                            opacity: 0.7,
+                                            fontWeight: 'bold',
+                                            letterSpacing: '1px',
+
+                                        }
+                                    }>SELECT CATEGORY</span>;
+                                    }
+                                    return selected;
+                                  }}
+                                required
+                            >
+                                <MenuItem value="Electronics">Electronics</MenuItem>
+                                <MenuItem value="Books">Books</MenuItem>
+                                <MenuItem value="Furniture">Furniture</MenuItem>
+                                <MenuItem value={category}>
+                                    <TextField
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        fullWidth
+                                        placeholder="Enter Category"
+                                        margin="normal"
+                                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                                    />
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                     </div>
                 <button type="submit">Upload</button>
             </form>

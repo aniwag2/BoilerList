@@ -13,6 +13,8 @@
     padding: 20px; /* Add some padding around the edges */
     box-sizing: border-box; /* Include padding in element's total width and height */
     overflow-y: auto; /* Allow scrolling if content is too tall */
+    min-width: 100%;
+    margin: 0 auto;
 }
 
 .upload-title {
@@ -23,7 +25,7 @@
 }
 
 .upload-image-container {
-    width: 400px;
+    width: 100%;
     height: 100%;
     min-height: 200px;
     border: 2px dashed var(--purdue-gold);
@@ -57,6 +59,15 @@
     margin: 10px 0;
 }
 
+.form-group-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--purdue-gold);
+    text-transform: uppercase; /* Ensure it's uppercase */
+    font-family: 'Arial', sans-serif; /* A strong sans-serif font */
+    letter-spacing: 1px; /* Slight letter spacing */
+}
+
 .purdue-logo {
     width: 120px; /* Adjust size as needed */
     height: auto; /* Maintain aspect ratio */
@@ -80,7 +91,7 @@
     border-radius: 0; /* No border-radius for the form container */
     box-shadow: none; /* No shadow */
     width: 100%;
-    max-width: 400px; /* Max width for the form elements */
+    min-width: 400px; /* Max width for the form elements */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,25 +100,6 @@
 .form-group {
     margin-bottom: 25px; /* Spacing between input fields */
     width: 100%; /* Take full width of the form container */
-}
-
-.form-group label {
-    display: none; /* Hide labels as we're using placeholders */
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"] {
-    width: calc(100% - 40px); /* Account for padding and border */
-    padding: 18px 20px; /* Generous padding */
-    border: 2px solid var(--purdue-gold); /* Gold border */
-    border-radius: 10px; /* Rounded corners */
-    font-size: 1.2em; /* Larger text inside input */
-    color: var(--purdue-gold); /* Gold text color when typing */
-    background-color: var(--purdue-black); /* Black background for input fields */
-    outline: none; /* Remove default focus outline */
-    box-shadow: none; /* No input shadow */
-    font-family: 'Arial', sans-serif;
 }
 
 /* Placeholder styling */
@@ -158,3 +150,23 @@
     font-size: 0.95em;
     font-weight: bold;
 }
+
+/* .category-dropdown {
+    width: 100%;
+    padding: 18px 20px;
+    background-color: var(--purdue-black);
+    color: var(--purdue-gold);
+    border: 2px solid var(--purdue-gold); 
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    letter-spacing: 1px; 
+    font-family: 'Arial', sans-serif;
+}  */
+ /* .category-dropdown::placeholder {
+    color: var(--purdue-gold); 
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Arial', sans-serif;
+} */
