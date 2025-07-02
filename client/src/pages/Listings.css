@@ -1,13 +1,5 @@
 /* client/src/pages/Listings.css */
 
-/* --- Styles for ToggleButtonGroup and ToggleButtons (NEW) --- */
-
-/* You might consider adding a custom class to the <Box> wrapping the ToggleButtonGroup in Listings.jsx
-   e.g., <Box className="listings-filter-container" sx={{ my: 3, display: 'flex', justifyContent: 'center' }}>
-   And then use that class here: .listings-filter-container .MuiToggleButtonGroup-root { ... }
-   This prevents over-scoping the generic .MuiBox-root style.
-*/
-
 /* Style the ToggleButtonGroup itself */
 .MuiToggleButtonGroup-root {
     background-color: var(--purdue-black); /* Dark background for the group */
@@ -52,38 +44,51 @@
 /* --- End ToggleButtonGroup Styles --- */
 
 
-/* --- Your existing Listings.css styles below --- */
+/* --- Your existing Listings.css styles, with adjustments --- */
 
 .listings-root {
     padding: 10px;
-    background: #111; /* Or consider var(--purdue-black); for consistency */
+    background: var(--purdue-black); /* Consistent black background for the page */
     min-height: 100vh;
 }
 
 .listings-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Keep this for smaller screens, but Grid item will override for MD+ */
     gap: 10px;
 }
 
 .listing-card {
-    border: 2px solid #c1a366; /* This is very close to --purdue-gold */
+    border: 2px solid var(--purdue-gold); /* Consistent gold border */
     border-radius: 10px;
-    background: #111; /* Consider #fff or #f5f5f5 for cards if you want light cards, or a lighter shade of black */
-    color: #c1a366; /* Text color on card */
+    background: var(--card-background-light); /* White background as in your screenshots */
+    color: var(--card-text-dark); /* Dark text for card content */
     padding: 32px;
     min-height: 320px;
-    max-width: 250px;
-    min-width: 250px;
+    /* --- REMOVED: max-width and min-width to let Grid control sizing --- */
+    /* max-width: 250px; */
+    /* min-width: 250px; */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     font-size: 18px;
+    box-sizing: border-box; /* Ensures padding/border are included in the element's total size */
 }
+
+/* Ensure the image inside the card always fits well */
+.MuiCardMedia-root {
+    object-fit: cover; /* Already set inline in JSX, but good to reinforce */
+    border-radius: 4px; /* Slightly rounded corners for image within card */
+}
+
+/* You might want to adjust default Typography color if needed, as it can be inherited */
+/* .MuiTypography-root {
+    color: var(--card-text-dark);
+} */
 
 .photo-box {
     height: 100px;
-    background: #222;
+    background: #eee; /* Lighter background for placeholder image area */
     border-radius: 8px;
     margin-bottom: 12px;
     display: flex;
@@ -91,6 +96,7 @@
     justify-content: center;
     font-weight: bold;
     font-size: 20px;
+    color: var(--card-text-dark); /* Dark text for placeholder */
 }
 
 .photo-box img {
@@ -100,8 +106,8 @@
 }
 
 .price-badge {
-    background: #c1a366;
-    color: #111;
+    background: var(--purdue-gold);
+    color: var(--purdue-black); /* Ensure black text on gold badge */
     display: inline-block;
     border-radius: 8px;
     padding: 2px 10px;
@@ -114,21 +120,28 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    width: 200px;
+    /* width: 200px; REMOVED: Let flexbox and text-overflow handle width */
 }
 
 .listing-btn {
     margin-top: 12px;
     background: transparent;
-    border: 2px solid #c1a366;
-    color: #c1a366;
+    border: 2px solid var(--purdue-gold); /* Use variable */
+    color: var(--purdue-gold); /* Use variable */
     border-radius: 8px;
     padding: 8px 0;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.listing-btn:hover {
+    background-color: var(--purdue-gold);
+    color: var(--purdue-black);
+}
+
+/* Modal styles for consistency */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -143,18 +156,18 @@
 }
 
 .modal-content {
-    background: #111;
-    border: 2px dashed #c1a366;
+    background: var(--card-background-light); /* Lighter background for modal content */
+    border: 2px dashed var(--purdue-gold);
     border-radius: 16px;
     padding: 32px;
     min-width: 320px;
-    color: #c1a366;
+    color: var(--card-text-dark); /* Dark text for modal content */
     position: relative;
 }
 
 .modal-photo-box {
     height: 120px;
-    background: #222;
+    background: #eee; /* Lighter background for modal photo placeholder */
     border-radius: 8px;
     margin-bottom: 16px;
     display: flex;
@@ -162,6 +175,7 @@
     justify-content: center;
     font-weight: bold;
     font-size: 22px;
+    color: var(--card-text-dark);
 }
 
 .modal-photo-box img {
@@ -183,11 +197,17 @@
 .close-btn {
     margin-top: 18px;
     background: transparent;
-    border: 2px solid #c1a366;
-    color: #c1a366;
+    border: 2px solid var(--purdue-gold);
+    color: var(--purdue-gold);
     border-radius: 8px;
     padding: 8px 0;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: var(--purdue-gold);
+    color: var(--purdue-black);
 }

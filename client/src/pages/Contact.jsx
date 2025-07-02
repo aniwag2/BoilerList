@@ -95,7 +95,7 @@ const Contact = () => {
 
 				<div className="contact-footer">
 					<h4>Other Ways to Reach Us</h4>
-					<p>Email: support@boilerlist.com</p>
+					<p>Email: boilerlistpurdue@gmail.com</p>
 				</div>
 			</div>
 

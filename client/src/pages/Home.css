@@ -36,7 +36,7 @@
     text-decoration: none; /* Remove underline from Link */
     width: 100%; /* Take full width of the container */
     max-width: 300px; /* Max width for buttons, adjust as needed */
-    margin-bottom: 5px; /* Space between the two buttons */
+    margin-bottom: 20px; /* Space between the two buttons */
 }
 
 /* Styling for the actual buttons */
