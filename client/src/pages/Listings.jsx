@@ -100,7 +100,7 @@ const Listings = () => {
         const result = await apiToggleFavorite(itemId); // Call the API function
         if (result.success) {
             // Optimistically update the local state to reflect the new favorite status
-            setDisplayedListings(prevListings =>
+            setAllListings(prevListings =>
                 prevListings.map(item =>
                     item._id === itemId ? { ...item, isFavorite: result.isFavorite } : item
                 )
