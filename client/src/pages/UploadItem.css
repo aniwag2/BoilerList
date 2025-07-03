@@ -151,22 +151,12 @@
     font-weight: bold;
 }
 
-/* .category-dropdown {
-    width: 100%;
-    padding: 18px 20px;
-    background-color: var(--purdue-black);
-    color: var(--purdue-gold);
-    border: 2px solid var(--purdue-gold); 
-    border-radius: 10px;
-    font-size: 1.2em;
-    font-weight: bold;
-    letter-spacing: 1px; 
-    font-family: 'Arial', sans-serif;
-}  */
- /* .category-dropdown::placeholder {
-    color: var(--purdue-gold); 
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'Arial', sans-serif;
-} */
+
+/* Make the toast close button smaller */
+.Toastify__close-button {
+    font-size: 0.8em !important;   /* Make the icon smaller */
+    width: 20px !important;        /* Adjust width */
+    height: 20px !important;       /* Adjust height */
+    line-height: 20px !important;  /* Center the icon */
+    padding: 0 !important;         /* Remove extra padding */
+  }

@@ -10,6 +10,7 @@ import {
 import FlagIcon from "@mui/icons-material/Flag";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite"; // Filled heart icon
+import Pagination from "@mui/material/Pagination";
 import ReportDialog from "../components/ReportDialog";
 import { UserContext } from "../UserContext";
 import { getListings as apiGetListings, toggleFavorite as apiToggleFavorite } from "../api/user";
@@ -22,8 +23,13 @@ const Listings = () => {
     const [reportOpen, setReportOpen] = useState(false);
     const [reportListingId, setReportListingId] = useState(null);
     const [allListings, setAllListings] = useState([]); // Stores all fetched listings
+	const [displayedListings, setDisplayedListings] = useState([]); // Stores listings after filtering
+	const [displayedFavorites, setDisplayedFavorites] = useState([]); // Stores favorites after filtering
     const [filteredListings, setFilteredListings] = useState([]); // Stores listings after filtering
     const [filter, setFilter] = useState('all'); // State for filter: 'all' or 'favorites'
+    const [currentPage, setCurrentPage] = useState(1);
+	const [favoritesPage, setFavoritesPage] = useState(1);
+    const listingsPerPage = 12;
 
     // Fetch listings on component mount or when user changes (e.g., login/logout)
     useEffect(() => {
@@ -31,6 +37,10 @@ const Listings = () => {
             const result = await apiGetListings(); // Use the API function from client/api/user.js
             if (result.success) {
                 setAllListings(result.listings);
+                setDisplayedListings(result.listings.slice((currentPage - 1) * listingsPerPage, 
+				result.listings.length < currentPage * listingsPerPage ? result.listings.length : listingsPerPage));
+				const favorites = result.listings.filter(item => item.isFavorite);
+				setDisplayedFavorites(favorites.slice(0, listingsPerPage));
             } else {
                 console.error("Error fetching listings:", result.message);
                 // Optionally, show a toast notification here
@@ -43,12 +53,12 @@ const Listings = () => {
     useEffect(() => {
         if (filter === 'favorites' && user) {
             // Filter by isFavorite property only if 'favorites' filter is selected AND user is logged in
-            setFilteredListings(allListings.filter(item => item.isFavorite));
-        } else {
-            // Otherwise, show all listings
-            setFilteredListings(allListings);
+            setFilteredListings(displayedFavorites);
         }
-    }, [allListings, filter, user]); // Re-run when these dependencies change
+		else {
+			setFilteredListings(displayedListings);
+		}
+    }, [displayedListings, filter, user, displayedFavorites, displayedListings]); // Re-run when these dependencies change
 
     const modalStyle = {
         position: "absolute",
@@ -67,6 +77,19 @@ const Listings = () => {
         setReportOpen(true);
     };
 
+	const handlePageChange = (event, value) => {
+		console.log(filter);
+		if (filter === 'favorites') {
+			setFavoritesPage(value);
+			setDisplayedFavorites(allListings.slice((value - 1) * listingsPerPage, 
+			allListings.length < value * listingsPerPage ? allListings.length : value * listingsPerPage).filter(item => item.isFavorite));
+		} else {
+			setCurrentPage(value);
+			setDisplayedListings(allListings.slice((value - 1) * listingsPerPage, 
+			allListings.length < value * listingsPerPage ? allListings.length : value * listingsPerPage));
+		}
+    };
+
     const handleFavoriteClick = async (itemId) => {
         if (!user) {
             // If user is not logged in, prompt them to log in
@@ -78,7 +101,7 @@ const Listings = () => {
         const result = await apiToggleFavorite(itemId); // Call the API function
         if (result.success) {
             // Optimistically update the local state to reflect the new favorite status
-            setAllListings(prevListings =>
+            setDisplayedListings(prevListings =>
                 prevListings.map(item =>
                     item._id === itemId ? { ...item, isFavorite: result.isFavorite } : item
                 )
@@ -99,6 +122,14 @@ const Listings = () => {
                 // Don't change filter state if not logged in and trying to filter favorites
                 return;
             }
+			else if (newFilter === 'favorites') {
+				setFavoritesPage(1);
+				setDisplayedFavorites(allListings.filter(item => item.isFavorite).slice(0, listingsPerPage));
+			}
+			else if (newFilter === 'all') {
+				setCurrentPage(1);
+				setDisplayedListings(allListings.slice(0, listingsPerPage));
+			}
             setFilter(newFilter); // Update filter state
         }
     };
@@ -196,7 +227,7 @@ const Listings = () => {
                             <Box mb={2}>
                                 {selected.image && selected.image.data ? (
                                     <img
-                                        src={`data:${selected.image.contentType};base66,${selected.image.data}`}
+                                        src={`data:${selected.image.contentType};base64,${selected.image.data}`}
                                         alt={selected.name}
                                         style={{ width: "100%", maxHeight: 250, objectFit: "cover" }}
                                     />
@@ -238,6 +269,31 @@ const Listings = () => {
                 open={reportOpen}
                 onClose={() => setReportOpen(false)}
                 listingId={reportListingId}
+            />
+			<Pagination
+                count={filter === 'favorites'
+					? Math.ceil(allListings.filter(item => item.isFavorite).length / listingsPerPage)
+					: Math.ceil(allListings.length / listingsPerPage)}
+                page={filter === 'favorites' ? favoritesPage : currentPage}
+				onChange={handlePageChange}
+				color="secondary"
+                sx={{
+					width: "100%",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					padding: 10,
+					"& .MuiPaginationItem-textPrimary": {
+						color: "gold",
+					},
+					"& .MuiPaginationItem-root": {
+						color: "gold",
+					},
+					"& .MuiPaginationItem-root.Mui-selected": {
+						backgroundColor: "gold",
+						color: "black",
+					},
+				}}
             />
         </div>
     );
