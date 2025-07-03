@@ -58,7 +58,7 @@ const Listings = () => {
 		else {
 			setFilteredListings(displayedListings);
 		}
-    }, [displayedListings, filter, user, displayedFavorites, displayedListings]); // Re-run when these dependencies change
+    }, [displayedListings, filter, user, displayedFavorites]); // Re-run when these dependencies change
 
     const modalStyle = {
         position: "absolute",
@@ -78,7 +78,6 @@ const Listings = () => {
     };
 
 	const handlePageChange = (event, value) => {
-		console.log(filter);
 		if (filter === 'favorites') {
 			setFavoritesPage(value);
 			setDisplayedFavorites(allListings.slice((value - 1) * listingsPerPage, 
