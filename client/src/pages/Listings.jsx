@@ -7,6 +7,7 @@ import {
     ToggleButtonGroup, ToggleButton,
     Stack // Stack is imported but not used in this specific file, can be removed if not needed elsewhere
 } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material"; 
 import FlagIcon from "@mui/icons-material/Flag";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite"; // Filled heart icon
@@ -24,6 +25,17 @@ const Listings = () => {
     const [allListings, setAllListings] = useState([]); // Stores all fetched listings
     const [filteredListings, setFilteredListings] = useState([]); // Stores listings after filtering
     const [filter, setFilter] = useState('all'); // State for filter: 'all' or 'favorites'
+    const [selectedPriceRange, setSelectedPriceRange] = useState("");
+    
+    const priceRanges = [
+    { label: "Select Price", value: "" },
+    { label: "$0 - $10", value: "0-10" },
+    { label: "$10 - $20", value: "10-20" },
+    { label: "$20 - $40", value: "20-40" },
+    { label: "$40 - $80", value: "40-80" },
+    { label: "$80 - $120", value: "80-120" },
+    { label: "$120 - $200", value: "120-200" },
+    ];
 
     // Fetch listings on component mount or when user changes (e.g., login/logout)
     useEffect(() => {
@@ -38,6 +50,32 @@ const Listings = () => {
         };
         fetchAndSetListings();
     }, [user]); // Depend on 'user' so listings re-fetch on login/logout to update favorite status
+
+        useEffect(() => {
+    const fetchListings = async () => {
+        try {
+        let url = "http://localhost:8080/api/filtering";
+
+        if (selectedPriceRange) {
+            const [minPrice, maxPrice] = selectedPriceRange.split("-");
+            url += `?minPrice=${minPrice}&maxPrice=${maxPrice}`;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.success) {
+            setAllListings(data.listings);
+        } else {
+            console.error("Error fetching listings:", data.message);
+        }
+        } catch (err) {
+        console.error("Network error fetching listings:", err);
+        }
+    };
+
+    fetchListings();
+    }, [selectedPriceRange]);
 
     // Effect to apply filtering whenever allListings, filter state, or user (for favorites) changes
     useEffect(() => {
@@ -122,6 +160,47 @@ const Listings = () => {
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Box>
+
+ <Box sx={{ my: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  <Typography
+    variant="subtitle1"
+    sx={{ color: "#FFD700", fontWeight: "bold", mb: 1 }}
+  >
+    Price Range
+  </Typography>
+
+  <FormControl sx={{ minWidth: 220 }}>
+    <Select
+      value={selectedPriceRange}
+      onChange={(e) => setSelectedPriceRange(e.target.value)}
+      displayEmpty
+      inputProps={{ 'aria-label': 'Price Range' }}
+      sx={{
+        color: "white",
+        borderColor: "#FFD700",
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#FFD700",
+        },
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#FFD700",
+        },
+        "&:hover .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#FFD700",
+        },
+        "& .MuiSvgIcon-root": {
+          color: "#FFD700",
+        },
+        backgroundColor: "#121212", // Optional: match your dark theme
+      }}
+    >
+      {priceRanges.map((range, idx) => (
+        <MenuItem key={idx} value={range.value}>
+          {range.label}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Box>
 
             <Grid container spacing={4} justifyContent="center">
                 {/* Use filteredListings for mapping */}

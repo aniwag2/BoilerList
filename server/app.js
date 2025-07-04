@@ -35,7 +35,8 @@ const uploadRoutes = require("./routes/upload");
 const listingRoutes = require("./routes/listings");
 const feedbackRoutes = require("./routes/feedback");
 const reportRoutes = require("./routes/report");
-const userRoutes = require("./routes/user"); // <--- NEW: Import user routes
+const userRoutes = require("./routes/user"); 
+const filteringRoutes = require("./routes/filtering");
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -43,7 +44,8 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/report", reportRoutes);
-app.use("/api/user", userRoutes); // <--- NEW: Add user routes
+app.use("/api/user", userRoutes); 
+app.use("/api/filtering", filteringRoutes);
 
 // port
 const port = process.env.PORT || 8080;
