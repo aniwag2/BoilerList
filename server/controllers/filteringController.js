@@ -1,16 +1,24 @@
-const Item = require("../models/Item"); 
+const Item = require("../models/Item");
 
 const getFilteredListings = async (req, res) => {
   try {
-    const { minPrice, maxPrice } = req.query;
-
+    const { minPrice, maxPrice, category } = req.query;
     const query = {};
 
     if (minPrice !== undefined && maxPrice !== undefined) {
-      query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+      query.price = {
+        $gte: parseInt(minPrice),
+        $lte: parseInt(maxPrice),
+      };
     }
 
-    const items = await Item.find(query);
+    if (category && category !== "") {
+      query.category = category;
+    }
+
+    // Exclude image data to improve performance
+    const items = await Item.find(query).select("-image.data");
+
     res.json({ success: true, listings: items });
   } catch (err) {
     console.error("getFilteredListings error:", err);
