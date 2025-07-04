@@ -1,213 +1,154 @@
-/* client/src/pages/Listings.css */
 
-/* Style the ToggleButtonGroup itself */
+/* --- Listings.css --- */
+
+/* Purdue Color Variables (define these in :root elsewhere if needed) */
+:root {
+  --purdue-black: #121212;
+  --purdue-gold: #FFD700;
+  --card-background-light: #1e1e1e;
+  --card-text-dark: #ffffff;
+}
+
+/* --- ToggleButtonGroup Styling --- */
 .MuiToggleButtonGroup-root {
-    background-color: var(--purdue-black); /* Dark background for the group */
-    border: 2px solid var(--purdue-gold); /* Gold border for the group */
-    border-radius: 8px; /* Rounded corners for the group */
+  background-color: var(--purdue-black);
+  border: 2px solid var(--purdue-gold);
+  border-radius: 8px;
 }
 
-/* Style individual ToggleButtons */
 .MuiToggleButton-root {
-    color: var(--purdue-gold) !important; /* Gold text for buttons */
-    border: 1px solid var(--purdue-gold) !important; /* Individual button borders */
-    text-transform: uppercase; /* Match your other buttons */
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    padding: 8px 15px;
-    transition: all 0.3s ease; /* Smooth transitions */
-    font-family: 'Arial', sans-serif; /* Consistent font */
+  color: var(--purdue-gold) !important;
+  border: 1px solid var(--purdue-gold) !important;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Arial', sans-serif;
 }
 
-/* Style for selected ToggleButton */
 .MuiToggleButton-root.Mui-selected {
-    background-color: var(--purdue-gold) !important; /* Gold background when selected */
-    color: var(--purdue-black) !important; /* Black text when selected */
-    border-color: var(--purdue-black) !important; /* Black border when selected */
+  background-color: var(--purdue-gold) !important;
+  color: var(--purdue-black) !important;
+  border-color: var(--purdue-black) !important;
 }
 
-/* Style for ToggleButton on hover */
 .MuiToggleButton-root:hover {
-    background-color: rgba(194, 142, 14, 0.2) !important; /* Slightly transparent gold on hover */
-    color: var(--purdue-gold) !important; /* Maintain gold text on hover */
+  background-color: rgba(194, 142, 14, 0.2) !important;
+  color: var(--purdue-gold) !important;
 }
 
-/* Style for disabled ToggleButton (e.g., "My Favorites" when not logged in) */
 .MuiToggleButton-root.Mui-disabled {
-    opacity: 0.5 !important; /* Make it semi-transparent when disabled */
-    color: var(--purdue-gold) !important;
-    border-color: var(--purdue-gold) !important;
-    cursor: not-allowed !important;
-    background-color: var(--purdue-black) !important;
+  opacity: 0.5 !important;
+  color: var(--purdue-gold) !important;
+  border-color: var(--purdue-gold) !important;
+  cursor: not-allowed !important;
+  background-color: var(--purdue-black) !important;
 }
 
-/* --- End ToggleButtonGroup Styles --- */
-
-
-/* --- Your existing Listings.css styles, with adjustments --- */
-
+/* --- Card Styling --- */
 .listings-root {
-    padding: 10px;
-    background: var(--purdue-black); /* Consistent black background for the page */
-    min-height: 100vh;
+  padding: 10px;
+  background: var(--purdue-black);
+  min-height: 100vh;
 }
 
 .listings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Keep this for smaller screens, but Grid item will override for MD+ */
-    gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
 }
 
 .listing-card {
-    border: 2px solid var(--purdue-gold); /* Consistent gold border */
-    border-radius: 10px;
-    background: var(--card-background-light); /* White background as in your screenshots */
-    color: var(--card-text-dark); /* Dark text for card content */
-    padding: 32px;
-    min-height: 320px;
-    /* --- REMOVED: max-width and min-width to let Grid control sizing --- */
-    /* max-width: 250px; */
-    /* min-width: 250px; */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: 18px;
-    box-sizing: border-box; /* Ensures padding/border are included in the element's total size */
+  border: 2px solid var(--purdue-gold);
+  border-radius: 10px;
+  background: var(--card-background-light);
+  color: var(--card-text-dark);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 18px;
+  font-family: 'Sora', sans-serif;
+  transition: transform 0.3s ease;
 }
 
-/* Ensure the image inside the card always fits well */
+.listing-card:hover {
+  transform: scale(1.02);
+}
+
 .MuiCardMedia-root {
-    object-fit: cover; /* Already set inline in JSX, but good to reinforce */
-    border-radius: 4px; /* Slightly rounded corners for image within card */
-}
-
-/* You might want to adjust default Typography color if needed, as it can be inherited */
-/* .MuiTypography-root {
-    color: var(--card-text-dark);
-} */
-
-.photo-box {
-    height: 100px;
-    background: #eee; /* Lighter background for placeholder image area */
-    border-radius: 8px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 20px;
-    color: var(--card-text-dark); /* Dark text for placeholder */
-}
-
-.photo-box img {
-    max-height: 90px;
-    max-width: 100%;
-    border-radius: 8px;
-}
-
-.price-badge {
-    background: var(--purdue-gold);
-    color: var(--purdue-black); /* Ensure black text on gold badge */
-    display: inline-block;
-    border-radius: 8px;
-    padding: 2px 10px;
-    font-weight: bold;
-    margin: 8px 0;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .listing-description {
-    font-size: 14px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    /* width: 200px; REMOVED: Let flexbox and text-overflow handle width */
+  font-size: 15px;
+  color: white;
+  text-align: center;
+  margin-top: 4px;
 }
 
-.listing-btn {
-    margin-top: 12px;
-    background: transparent;
-    border: 2px solid var(--purdue-gold); /* Use variable */
-    color: var(--purdue-gold); /* Use variable */
-    border-radius: 8px;
-    padding: 8px 0;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.listing-btn:hover {
-    background-color: var(--purdue-gold);
-    color: var(--purdue-black);
-}
-
-/* Modal styles for consistency */
+/* --- Modal Styling --- */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
-    background: var(--card-background-light); /* Lighter background for modal content */
-    border: 2px dashed var(--purdue-gold);
-    border-radius: 16px;
-    padding: 32px;
-    min-width: 320px;
-    color: var(--card-text-dark); /* Dark text for modal content */
-    position: relative;
-}
-
-.modal-photo-box {
-    height: 120px;
-    background: #eee; /* Lighter background for modal photo placeholder */
-    border-radius: 8px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 22px;
-    color: var(--card-text-dark);
+  background: #1e1e1e;
+  color: white;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  border: 2px solid var(--purdue-gold);
+  font-family: 'Inter', sans-serif;
+  text-align: center;
 }
 
 .modal-photo-box img {
-    max-height: 110px;
-    max-width: 100%;
-    border-radius: 8px;
-}
-
-.details-section {
-    font-size: 15px;
-    margin-bottom: 10px;
+  width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--purdue-gold);
 }
 
 .details-title {
-    font-weight: bold;
-    margin-top: 10px;
+  font-weight: bold;
+  margin: 10px 0 4px;
+  font-size: 1rem;
+}
+
+.details-section {
+  color: white;
+  font-size: 1rem;
+}
+
+.details-section .icon {
+  margin-right: 6px;
 }
 
 .close-btn {
-    margin-top: 18px;
-    background: transparent;
-    border: 2px solid var(--purdue-gold);
-    color: var(--purdue-gold);
-    border-radius: 8px;
-    padding: 8px 0;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  margin-top: 18px;
+  background: transparent;
+  border: 2px solid var(--purdue-gold);
+  color: var(--purdue-gold);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .close-btn:hover {
-    background-color: var(--purdue-gold);
-    color: var(--purdue-black);
+  background-color: var(--purdue-gold);
+  color: var(--purdue-black);
 }
