@@ -1,4 +1,4 @@
-// Listings.jsx — Toast top-center, price/category filters, reset button
+// Listings.jsx — Updated with immediate filtering on dropdown change
 
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,8 +20,6 @@ import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Listings.css";
-
-// (rest of your component remains unchanged...)
 
 const Listings = () => {
   const navigate = useNavigate();
@@ -59,40 +57,53 @@ const Listings = () => {
   }, [user]);
 
   useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        let url = "http://localhost:8080/api/filtering";
-        const params = new URLSearchParams();
-        if (selectedPriceRange) {
-          const [minPrice, maxPrice] = selectedPriceRange.split("-");
-          params.append("minPrice", minPrice);
-          params.append("maxPrice", maxPrice);
-        }
-        if (selectedCategory) {
-          params.append("category", selectedCategory);
-        }
-        if (params.toString()) {
-          url += `?${params.toString()}`;
-        }
-
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.success) setAllListings(data.listings);
-      } catch (err) {
-        console.error("Network error:", err);
-      }
-    };
-
-    if (filter === "all") fetchListings();
-  }, [selectedPriceRange, selectedCategory, filter]);
-
-  useEffect(() => {
     if (filter === "favorites" && user) {
       setFilteredListings(allListings.filter(item => item.isFavorite));
     } else {
       setFilteredListings(allListings);
     }
   }, [allListings, filter, user]);
+
+  const fetchFilteredListings = async (priceRange, category) => {
+    try {
+      let url = "http://localhost:8080/api/filtering";
+      const params = new URLSearchParams();
+
+      if (priceRange) {
+        const [minPrice, maxPrice] = priceRange.split("-");
+        params.append("minPrice", minPrice);
+        params.append("maxPrice", maxPrice);
+      }
+      if (category) {
+        params.append("category", category);
+      }
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) setAllListings(data.listings);
+    } catch (err) {
+      console.error("Network error:", err);
+    }
+  };
+
+  const handlePriceChange = (e) => {
+    const newPrice = e.target.value;
+    setSelectedPriceRange(newPrice);
+    if (filter === "all") {
+      fetchFilteredListings(newPrice, selectedCategory);
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    const newCategory = e.target.value;
+    setSelectedCategory(newCategory);
+    if (filter === "all") {
+      fetchFilteredListings(selectedPriceRange, newCategory);
+    }
+  };
 
   const handleFavoriteClick = async (itemId) => {
     if (!user) return navigate("/login");
@@ -127,7 +138,6 @@ const Listings = () => {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "'Sora', sans-serif" }}>
-      {/* Toggle Group */}
       <Box sx={{ my: 3, display: "flex", justifyContent: "center" }}>
         <ToggleButtonGroup value={filter} exclusive onChange={handleFilterChange}>
           <ToggleButton value="all">All Listings</ToggleButton>
@@ -135,7 +145,6 @@ const Listings = () => {
         </ToggleButtonGroup>
       </Box>
 
-      {/* Filters */}
       {filter === "all" && (
         <Box
           sx={{
@@ -147,11 +156,10 @@ const Listings = () => {
             alignItems: "center"
           }}
         >
-          {/* Price Dropdown */}
           <FormControl sx={{ minWidth: 180 }}>
             <Select
               value={selectedPriceRange}
-              onChange={(e) => setSelectedPriceRange(e.target.value)}
+              onChange={handlePriceChange}
               displayEmpty
               sx={{
                 color: "white", backgroundColor: "#121212",
@@ -166,11 +174,10 @@ const Listings = () => {
             </Select>
           </FormControl>
 
-          {/* Category Dropdown */}
           <FormControl sx={{ minWidth: 180 }}>
             <Select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={handleCategoryChange}
               displayEmpty
               sx={{
                 color: "white", backgroundColor: "#121212",
@@ -186,7 +193,6 @@ const Listings = () => {
             </Select>
           </FormControl>
 
-          {/* Reset Button */}
           <Button
             onClick={handleResetFilters}
             variant="outlined"
@@ -204,7 +210,6 @@ const Listings = () => {
         </Box>
       )}
 
-      {/* Listings Grid */}
       <Grid container spacing={4} justifyContent="center">
         {filteredListings.length === 0 ? (
           <Typography sx={{ color: "#FFD700", mt: 4 }}>No Listings Found</Typography>
@@ -212,7 +217,6 @@ const Listings = () => {
           filteredListings.map((item, index) => (
             <Fade in={true} timeout={300 + index * 100} key={item._id}>
               <Grid item xs={12} sm={6} md={3}>
-                {/* Card */}
                 <Card sx={{
                   borderRadius: 3, bgcolor: "#1e1e1e", color: "white",
                   transition: "transform 0.3s", "&:hover": { transform: "scale(1.02)" },
