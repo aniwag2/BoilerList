@@ -99,7 +99,13 @@ const Listings = () => {
 	
 		  const res = await fetch(url);
 		  const data = await res.json();
-		  if (data.success) setAllListings(data.listings);
+		  if (data.success) 
+			{
+				setAllListings(data.listings);
+				setDisplayedListings(data.listings.slice((currentPage - 1) * listingsPerPage, 
+				data.listings.length < currentPage * listingsPerPage ? data.listings.length : currentPage * listingsPerPage));
+				console.log(data.listings);
+			}
 		} catch (err) {
 		  console.error("Network error:", err);
 		}
@@ -139,10 +145,10 @@ const Listings = () => {
     };
 
 
-  const handleFlagClick = (id) => {
-    setReportListingId(id);
-    setReportOpen(true);
-  };
+	const handleFlagClick = (id) => {
+		setReportListingId(id);
+		setReportOpen(true);
+	};
 
     const handleFavoriteClick = async (itemId) => {
         if (!user) {
@@ -203,6 +209,8 @@ const Listings = () => {
 		setSelectedPriceRange("");
 		setSelectedCategory("");
 		setAllListings(originalListings);
+		setDisplayedListings(originalListings.slice((currentPage - 1) * listingsPerPage, 
+		originalListings.length < currentPage * listingsPerPage ? originalListings.length : currentPage * listingsPerPage));
 		toast.info("Filters cleared");
 	  };
 
