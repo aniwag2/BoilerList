@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import { UserContext, UserProvider } from './UserContext';
 import UploadItem from './pages/UploadItem';
 import Contact from './pages/Contact';
+import EditItem from './pages/EditItem'; // NEW: Import EditItem
 
 // Helper component to wrap routes that need the Navbar
 const LayoutWithNavbar = ({ children }) => {
@@ -35,7 +36,7 @@ function App() {
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
 
-                        {/* Routes that DO have the Navbar (e.g., Listings, Profile) */}
+                        {/* Routes that DO have the Navbar (e.g., Listings, Profile, UploadItem, Contact, EditItem) */}
                         {/* Wrap these routes with LayoutWithNavbar */}
                         <Route
                             path="/listings"
@@ -62,12 +63,21 @@ function App() {
                             }
                         />
                         <Route
-                          path="/contact"
-                          element={
-                            <LayoutWithNavbar>
-                              <Contact />
-                            </LayoutWithNavbar>
-                          }
+                            path="/contact"
+                            element={
+                                <LayoutWithNavbar>
+                                    <Contact />
+                                </LayoutWithNavbar>
+                            }
+                        />
+                        {/* NEW ROUTE FOR EDITING */}
+                        <Route
+                            path="/edit-item/:id" // Notice the :id for dynamic routing
+                            element={
+                                <LayoutWithNavbar>
+                                    <EditItem />
+                                </LayoutWithNavbar>
+                            }
                         />
                         {/* Add more protected routes here, wrapped by LayoutWithNavbar */}
                     </Routes>

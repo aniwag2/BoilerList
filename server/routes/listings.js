@@ -13,4 +13,6 @@ router.get('/getListings', auth, listingController.getListings);
 // This route requires authentication and will use a new controller function
 router.delete('/deleteListing/:id', auth, listingController.deleteListing);
 
+router.put('/updateListing/:id', auth, listingController.updateListing);
+
 module.exports = router;
