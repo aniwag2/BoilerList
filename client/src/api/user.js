@@ -33,7 +33,7 @@ export const login = async (credentials) => {
     }
 };
 
-// <--- NEW: Function to toggle favorite status
+// Function to toggle favorite status
 export const toggleFavorite = async (itemId) => {
     const token = getAuthToken();
     if (!token) {
@@ -41,11 +41,11 @@ export const toggleFavorite = async (itemId) => {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/user/favorites/toggle`, { // Corrected endpoint
+        const response = await fetch(`${API_BASE_URL}/user/favorites/toggle`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-auth-token": token, // <--- Send JWT token in header
+                "x-auth-token": token, // Send JWT token in header
             },
             body: JSON.stringify({ itemId }),
         });
@@ -62,7 +62,7 @@ export const toggleFavorite = async (itemId) => {
     }
 };
 
-// <--- NEW: Function to get listings, sending auth token if available
+// Function to get listings, sending auth token if available
 export const getListings = async () => {
     const token = getAuthToken(); // Get token. It might be null if not logged in.
     let headers = {};
@@ -86,5 +86,33 @@ export const getListings = async () => {
     } catch (err) {
         console.error("API Get Listings Error:", err);
         return { error: true, message: "Network error fetching listings." };
+    }
+};
+
+// --- NEW FUNCTION: deleteListing ---
+export const deleteListing = async (itemId) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/listings/deleteListing/${itemId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to mark item as sold." };
+        }
+        return { success: true, message: data.message };
+    } catch (err) {
+        console.error("API Delete Listing Error:", err);
+        return { error: true, message: "Network error marking item as sold." };
     }
 };
