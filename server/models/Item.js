@@ -1,7 +1,6 @@
+// server/models/Item.js
 const mongoose = require('mongoose');
-//No need to use mongoose.Schema because we are using the Schema class directly
 const Schema = mongoose.Schema;
-
 
 const ItemSchema = new Schema({
     name: {
@@ -20,7 +19,7 @@ const ItemSchema = new Schema({
         type: String,
         required: true
     },
-    email: {
+    email: { // You can keep this for display/contact, but it's not for ownership verification
         type: String,
         required: true
     },
@@ -31,8 +30,13 @@ const ItemSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    // --- NEW FIELD ---
+    owner: {
+        type: Schema.Types.ObjectId, // This indicates it's a MongoDB ObjectId
+        ref: 'User', // This tells Mongoose it refers to documents in the 'User' collection
+        required: true // An item must have an owner
     }
-})
+});
 
-//Export the model and create a new collection called Item
 module.exports = mongoose.model('Item', ItemSchema);
