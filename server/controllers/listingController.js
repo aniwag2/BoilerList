@@ -72,21 +72,18 @@ async function deleteListing(req, res) {
     }
 }
 
-// --- NEW FUNCTION: updateListing ---
+// --- UPDATED FUNCTION: updateListing to handle image ---
 async function updateListing(req, res) {
-    const { id } = req.params; // Listing ID from URL parameter
-    const userId = req.user ? req.user.id : null; // User ID from authenticated request
+    const { id } = req.params;
+    const userId = req.user ? req.user.id : null;
 
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized: You must be logged in to edit a listing.' });
     }
 
-    // Extract fields that can be updated from the request body
-    // We expect these to be sent as 'application/json' if no image update,
-    // or as 'multipart/form-data' if an image is also sent.
+    // When Multer is used, text fields come from req.body and file from req.file
     const { name, description, price, category } = req.body;
-    // For now, let's assume image isn't updated via this endpoint.
-    // If it is, `req.file` would be present.
+    const imageFile = req.file; // This will contain the new image data if provided
 
     try {
         const listing = await Item.findById(id);
@@ -95,27 +92,29 @@ async function updateListing(req, res) {
             return res.status(404).json({ message: 'Listing not found.' });
         }
 
-        // Verify ownership
         if (listing.owner.toString() !== userId.toString()) {
             return res.status(403).json({ message: 'Forbidden: You do not have permission to edit this listing.' });
         }
 
-        // Update the listing fields
-        // Only update fields if they are provided in the request body
+        // Update fields only if they are provided in the request body
+        // Note: For 'multipart/form-data', even if a field is not changed, it might still be in req.body
+        // Check for undefined or null if you want stricter control over what gets updated
         if (name !== undefined) listing.name = name;
         if (description !== undefined) listing.description = description;
-        if (price !== undefined) listing.price = price;
+        // Convert price to a number as it comes as string from form data
+        if (price !== undefined) listing.price = parseFloat(price);
         if (category !== undefined) listing.category = category;
 
-        // If you allow image updates:
-        // if (req.file) {
-        //     listing.image = {
-        //         contentType: req.file.mimetype,
-        //         data: req.file.buffer,
-        //     };
-        // }
+        // --- NEW LOGIC: Handle image update ---
+        if (imageFile) {
+            listing.image = {
+                contentType: imageFile.mimetype,
+                data: imageFile.buffer, // Multer's memoryStorage provides buffer
+            };
+        }
+        // If imageFile is null/undefined, the existing image data on the listing is retained.
 
-        await listing.save(); // Save the updated listing
+        await listing.save();
 
         res.json({ message: 'Listing updated successfully.', listing });
 
@@ -131,5 +130,5 @@ async function updateListing(req, res) {
 module.exports = {
     getListings,
     deleteListing,
-    updateListing // Export the new function
+    updateListing
 };
