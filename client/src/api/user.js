@@ -116,3 +116,49 @@ export const deleteListing = async (itemId) => {
         return { error: true, message: "Network error marking item as sold." };
     }
 };
+
+export const updateListing = async (itemId, listingData, imageFile = null) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    // Determine content type based on whether an image is being sent
+    let headers = {
+        "x-auth-token": token,
+    };
+    let body;
+
+    if (imageFile) {
+        // If image is included, use FormData
+        const formData = new FormData();
+        for (const key in listingData) {
+            formData.append(key, listingData[key]);
+        }
+        formData.append("image", imageFile);
+        body = formData;
+        // Do NOT set Content-Type header; browser will set multipart/form-data with boundary
+    } else {
+        // If no image, send as JSON
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify(listingData);
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/listings/updateListing/${itemId}`, {
+            method: "PUT",
+            headers: headers,
+            body: body,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to update listing." };
+        }
+        return { success: true, message: data.message, listing: data.listing };
+    } catch (err) {
+        console.error("API Update Listing Error:", err);
+        return { error: true, message: "Network error updating listing." };
+    }
+};

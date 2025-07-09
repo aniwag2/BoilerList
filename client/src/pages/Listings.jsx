@@ -1,11 +1,12 @@
-// Listings.jsx — Updated with immediate filtering on dropdown change and Mark as Sold
+// Listings.jsx — Updated with immediate filtering on dropdown change, Mark as Sold, and Edit Listing
+
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Grid, Card, CardMedia, CardContent, Typography, Button, Modal, Box,
   IconButton, CardActions, ToggleButtonGroup, ToggleButton,
   FormControl, Select, MenuItem, Fade,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle // NEW: Import Dialog components
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import FlagIcon from "@mui/icons-material/Flag";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -16,8 +17,8 @@ import { UserContext } from "../UserContext";
 import {
   getListings as apiGetListings,
   toggleFavorite as apiToggleFavorite,
-  deleteListing as apiDeleteListing // NEW: Import deleteListing
-} from "../api/user";
+  deleteListing as apiDeleteListing // Keep this
+} from "../api/user"; // No need to import updateListing here, it's used in EditItem.jsx
 import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,7 +42,7 @@ const Listings = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const listingsPerPage = 12;
 
-    // NEW STATE: For the "Mark as Sold" confirmation dialog
+    // State for the "Mark as Sold" confirmation dialog
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [listingToDelete, setListingToDelete] = useState(null);
 
@@ -82,7 +83,6 @@ const Listings = () => {
     // Effect to apply filtering whenever displayedListings, displayedFavorites, filter state, or user (for favorites) changes
     useEffect(() => {
         if (filter === 'favorites' && user) {
-            // Filter by isFavorite property only if 'favorites' filter is selected AND user is logged in
             setFilteredListings(displayedFavorites);
         }
         else {
@@ -140,15 +140,11 @@ const Listings = () => {
       };
 
 
-
     const handlePageChange = (event, value) => {
         if (filter === 'favorites') {
             setFavoritesPage(value);
-            // This displays the correct number of favorites on the page
-            // The useEffect will handle updating displayedFavorites based on allListings
         } else {
             setCurrentPage(value);
-            // The useEffect will handle updating displayedListings based on allListings
         }
     };
 
@@ -160,22 +156,18 @@ const Listings = () => {
 
     const handleFavoriteClick = async (itemId) => {
         if (!user) {
-            // If user is not logged in, prompt them to log in
             toast.info("Please log in to favorite items.");
-            navigate('/login'); // Redirect to login page
+            navigate('/login');
             return;
         }
 
-        const result = await apiToggleFavorite(itemId); // Call the API function
+        const result = await apiToggleFavorite(itemId);
         if (result.success) {
-            // Optimistically update the local state to reflect the new favorite status
             setAllListings(prevListings =>
                 prevListings.map(item =>
                     item._id === itemId ? { ...item, isFavorite: result.isFavorite } : item
                 )
             );
-            // Re-fetch and set displayed listings/favorites to ensure correct pagination and filtering are applied
-            // Instead of direct manipulation, let the useEffect for listings handle it
             fetchAndSetListings();
         } else {
             console.error("Failed to toggle favorite:", result.message);
@@ -184,59 +176,60 @@ const Listings = () => {
     };
 
     const handleFilterChange = (event, newFilter) => {
-        if (newFilter !== null) { // ToggleButtonGroup can pass null if a button is unselected (though 'exclusive' usually prevents this)
+        if (newFilter !== null) {
             if (newFilter === 'favorites' && !user) {
-                // If trying to filter by favorites but not logged in
                 toast.info("Please log in to view your favorited items.");
                 navigate('/login');
-                // Don't change filter state if not logged in and trying to filter favorites
                 return;
             }
-            // Reset page to 1 when changing filters
             setCurrentPage(1);
             setFavoritesPage(1);
-            setFilter(newFilter); // Update filter state
+            setFilter(newFilter);
         }
     };
 
     const handleResetFilters = () => {
         setSelectedPriceRange("");
         setSelectedCategory("");
-        // Reset current page and then fetch all original listings
         setCurrentPage(1);
-        setFilter("all"); // Ensure filter is reset to 'all'
-        fetchAndSetListings(); // Re-fetch all listings, which will reset displayedListings
+        setFilter("all");
+        fetchAndSetListings();
         toast.info("Filters cleared");
       };
 
-    // NEW: Handle Mark as Sold button click
     const handleMarkAsSoldClick = (item) => {
         setListingToDelete(item);
         setConfirmDeleteOpen(true);
     };
 
-    // NEW: Handle confirmation for deleting a listing
     const confirmDeleteListing = async () => {
         if (!listingToDelete) return;
 
-        setConfirmDeleteOpen(false); // Close the dialog immediately
+        setConfirmDeleteOpen(false);
 
         const result = await apiDeleteListing(listingToDelete._id);
         if (result.success) {
             toast.success(result.message);
-            // Update listings: remove the deleted item from allListings and re-apply pagination/filters
             setAllListings(prevListings =>
                 prevListings.filter(item => item._id !== listingToDelete._id)
             );
-            // Re-fetch listings to ensure pagination and favorite status are correctly re-calculated
             fetchAndSetListings();
-            setSelected(null); // Close the details modal
+            setSelected(null);
         } else {
             toast.error(result.message);
             console.error("Error marking item as sold:", result.message);
         }
-        setListingToDelete(null); // Clear the item to delete
+        setListingToDelete(null);
     };
+
+    // NEW: Handle Edit Listing button click
+    const handleEditListingClick = (item) => {
+        // Close the current modal first
+        setSelected(null);
+        // Navigate to the edit item page, passing the item ID
+        navigate(`/edit-item/${item._id}`);
+    };
+
 
     return (
         <div style={{ padding: "2rem", fontFamily: "'Sora', sans-serif" }}>
@@ -416,23 +409,39 @@ const Listings = () => {
                     📧 {selected.email}
                     </Typography>
 
-                    {/* NEW: Conditionally render "Mark Item As Sold" button */}
                     {user && selected.isOwner && (
-                        <Button
-                            onClick={() => handleMarkAsSoldClick(selected)}
-                            variant="contained"
-                            sx={{
-                                mt: 4,
-                                mr: 1, // Add some margin to the right
-                                backgroundColor: "error.main", // Red color for delete
-                                color: "white",
-                                fontWeight: "bold",
-                                borderRadius: "6px",
-                                "&:hover": { backgroundColor: "error.dark" }
-                            }}
-                        >
-                            Mark Item As Sold
-                        </Button>
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
+                            {/* Mark Item As Sold Button */}
+                            <Button
+                                onClick={() => handleMarkAsSoldClick(selected)}
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: "error.main",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    borderRadius: "6px",
+                                    "&:hover": { backgroundColor: "error.dark" },
+                                    flexGrow: 1 // Makes button take available space
+                                }}
+                            >
+                                Mark Item As Sold
+                            </Button>
+                            {/* NEW: Edit Listing Button */}
+                            <Button
+                                onClick={() => handleEditListingClick(selected)}
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: "#2196F3", // Blue color for edit
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    borderRadius: "6px",
+                                    "&:hover": { backgroundColor: "#1976D2" },
+                                    flexGrow: 1 // Makes button take available space
+                                }}
+                            >
+                                Edit Listing
+                            </Button>
+                        </Box>
                     )}
 
                     <Button onClick={() => setSelected(null)} variant="contained" sx={{
@@ -447,7 +456,6 @@ const Listings = () => {
             </Fade>
         </Modal>
 
-        {/* NEW: Confirmation Dialog for "Mark as Sold" */}
         <Dialog
             open={confirmDeleteOpen}
             onClose={() => setConfirmDeleteOpen(false)}
@@ -455,8 +463,8 @@ const Listings = () => {
             aria-describedby="alert-dialog-description"
             PaperProps={{
                 style: {
-                    backgroundColor: "#1e1e1e", // Dark background
-                    color: "white", // White text
+                    backgroundColor: "#1e1e1e",
+                    color: "white",
                     borderRadius: "8px",
                     boxShadow: "0 0 15px rgba(255,215,0,0.2)"
                 },
@@ -476,7 +484,7 @@ const Listings = () => {
                     Cancel
                 </Button>
                 <Button onClick={confirmDeleteListing} autoFocus sx={{
-                    backgroundColor: "error.main", // Red for confirm
+                    backgroundColor: "error.main",
                     color: "white",
                     "&:hover": { backgroundColor: "error.dark" }
                 }}>
