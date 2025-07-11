@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Grid, Card, CardMedia, CardContent, Typography, Button, Modal, Box,
   IconButton, CardActions, ToggleButtonGroup, ToggleButton,
-  FormControl, Select, MenuItem, Fade,
+  FormControl, Select, MenuItem, Fade, InputAdornment,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import FlagIcon from "@mui/icons-material/Flag";
@@ -13,11 +13,15 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ReportDialog from "../components/ReportDialog";
 import Pagination from "@mui/material/Pagination";
+import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import { UserContext } from "../UserContext";
 import {
   getListings as apiGetListings,
   toggleFavorite as apiToggleFavorite,
-  deleteListing as apiDeleteListing // Keep this
+  deleteListing as apiDeleteListing, // Keep this
+  searchItems as apiSearchItems
 } from "../api/user"; // No need to import updateListing here, it's used in EditItem.jsx
 import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
@@ -40,6 +44,8 @@ const Listings = () => {
     const [favoritesPage, setFavoritesPage] = useState(1);
     const [selectedPriceRange, setSelectedPriceRange] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+	const [searchFilter, setSearchFilter] = useState(false);
     const listingsPerPage = 12;
 
     // State for the "Mark as Sold" confirmation dialog
@@ -77,7 +83,9 @@ const Listings = () => {
     };
 
     useEffect(() => {
-        fetchAndSetListings();
+		if (!searchFilter) {
+			fetchAndSetListings();
+		}
     }, [user, currentPage, favoritesPage, filter]); // Depend on 'user', currentPage, favoritesPage, filter
 
     // Effect to apply filtering whenever displayedListings, displayedFavorites, filter state, or user (for favorites) changes
@@ -230,9 +238,89 @@ const Listings = () => {
         navigate(`/edit-item/${item._id}`);
     };
 
+    const handleSearch = async (e) => {
+        e.preventDefault();
+		console.log(searchQuery);
+		const result = await apiSearchItems(searchQuery);
+		if (result.success) {
+			setSearchFilter(true);
+			console.log(result.items.map(item => item._id));
+			const favorites = allListings.filter(item => item.isFavorite && result.items.map(item => item._id).includes(item._id));
+			const searchListings = allListings.filter(item => result.items.map(item => item._id).includes(item._id));
+			console.log(searchListings);
+			setCurrentPage(1);
+			setFavoritesPage(1);
+			setDisplayedListings(searchListings.slice((currentPage - 1) * listingsPerPage,
+            currentPage * listingsPerPage));
+            // Apply current pagination to the fetched favorites
+            setDisplayedFavorites(favorites.slice((favoritesPage - 1) * listingsPerPage,
+            favoritesPage * listingsPerPage));
+		} else {
+			console.error("Error searching for items:", result.message);
+			fetchAndSetListings();
+			toast.error("Error searching for items: " + result.message);
+		}
+    };
+
+	const handleClearSearch = () => {
+		setSearchQuery("");
+		setSearchFilter(false);
+		setCurrentPage(1);
+		setFavoritesPage(1);
+		if (selectedPriceRange || selectedCategory) {
+			fetchFilteredListings(selectedPriceRange, selectedCategory);
+		  } else {
+			fetchAndSetListings();
+		  }
+	}
+
 
     return (
         <div style={{ padding: "2rem", fontFamily: "'Sora', sans-serif" }}>
+        <form onSubmit={handleSearch}>
+			<TextField
+				label="Search for items" 
+				variant="outlined"
+				value={searchQuery}
+				onChange={(e) => {setSearchQuery(e.target.value);}}
+				size="small"
+				onKeyDown={(e) => {
+					if (e.key === 'Enter') {
+						handleSearch(e);
+					}
+				}}
+				sx={{
+					"& label": { color: "gold" },
+					"& label.Mui-focused": { color: "gold" },
+					"& .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+					"&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+					"& .MuiInputBase-input": { color: "gold" },
+				  }}
+				  slotProps={{
+					input: {
+						endAdornment: ( //Add an icon to the end of the input field
+						<>
+							{searchQuery && (
+							<InputAdornment position="end">
+								<IconButton
+								aria-label="clear search"
+								onClick={() => {handleClearSearch()}}
+								edge="end"
+								size="small"
+								>
+								<ClearIcon style={{ color: "gold" }} />
+								</IconButton>
+							</InputAdornment>
+							)}
+						</>
+						),
+						}
+					}}
+				/>
+			<IconButton type="submit" aria-label="search" >
+				<SearchIcon style={{ fill: "gold" }} />
+			</IconButton>
+    	</form>
         <Box sx={{ my: 3, display: "flex", justifyContent: "center" }}>
           <ToggleButtonGroup value={filter} exclusive onChange={handleFilterChange}>
             <ToggleButton value="all">All Listings</ToggleButton>

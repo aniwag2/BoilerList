@@ -37,6 +37,7 @@ const feedbackRoutes = require("./routes/feedback");
 const reportRoutes = require("./routes/report");
 const userRoutes = require("./routes/user"); 
 const filteringRoutes = require("./routes/filtering");
+const searchRoutes = require("./routes/search");
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -46,6 +47,7 @@ app.use("/api/feedback", feedbackRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/user", userRoutes); 
 app.use("/api/filtering", filteringRoutes);
+app.use("/api/search", searchRoutes);
 
 // port
 const port = process.env.PORT || 8080;

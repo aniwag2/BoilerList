@@ -162,3 +162,15 @@ export const updateListing = async (itemId, listingData, imageFile = null) => {
         return { error: true, message: "Network error updating listing." };
     }
 };
+
+export const searchItems = async (query) => {
+    const response = await fetch(`${API_BASE_URL}/search`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+    });
+    const data = await response.json();
+    return data;
+};
