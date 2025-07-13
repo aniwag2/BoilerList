@@ -5,19 +5,24 @@ import { useNavigate } from "react-router-dom";
 import {
   Grid, Card, CardMedia, CardContent, Typography, Button, Modal, Box,
   IconButton, CardActions, ToggleButtonGroup, ToggleButton,
-  FormControl, Select, MenuItem, Fade,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  FormControl, Select, MenuItem, Fade, InputAdornment,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Chip
 } from "@mui/material";
 import FlagIcon from "@mui/icons-material/Flag";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ReportDialog from "../components/ReportDialog";
 import Pagination from "@mui/material/Pagination";
+import TextField from "@mui/material/TextField";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import { UserContext } from "../UserContext";
 import {
   getListings as apiGetListings,
   toggleFavorite as apiToggleFavorite,
-  deleteListing as apiDeleteListing // Keep this
+  deleteListing as apiDeleteListing, // Keep this
+  searchItems as apiSearchItems
 } from "../api/user"; // No need to import updateListing here, it's used in EditItem.jsx
 import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
@@ -40,6 +45,9 @@ const Listings = () => {
     const [favoritesPage, setFavoritesPage] = useState(1);
     const [selectedPriceRange, setSelectedPriceRange] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+	const [searchFilter, setSearchFilter] = useState(false);
+    const [selectedAdditionalFilter, setSelectedAdditionalFilter] = useState("");
     const listingsPerPage = 12;
 
     // State for the "Mark as Sold" confirmation dialog
@@ -77,7 +85,9 @@ const Listings = () => {
     };
 
     useEffect(() => {
-        fetchAndSetListings();
+		if (!searchFilter) {
+			fetchAndSetListings();
+		}
     }, [user, currentPage, favoritesPage, filter]); // Depend on 'user', currentPage, favoritesPage, filter
 
     // Effect to apply filtering whenever displayedListings, displayedFavorites, filter state, or user (for favorites) changes
@@ -90,7 +100,7 @@ const Listings = () => {
         }
     }, [displayedListings, filter, user, displayedFavorites]); // Re-run when these dependencies change
 
-    const fetchFilteredListings = async (priceRange, category) => {
+    const fetchFilteredListings = async (priceRange, category, additionalFilter) => {
         try {
           let url = "http://localhost:8080/api/filtering";
           const params = new URLSearchParams();
@@ -102,6 +112,16 @@ const Listings = () => {
           }
           if (category) {
             params.append("category", category);
+          }
+
+
+          if (additionalFilter === "isBestOffer") {
+            params.append("isBestOffer", true);
+          } else if (additionalFilter === "isUrgent") {
+            params.append("isUrgent", true);
+          } else if (additionalFilter === "isBestOffer,isUrgent") {
+            params.append("isBestOffer", true);
+            params.append("isUrgent", true);
           }
           if (params.toString()) {
             url += `?${params.toString()}`;
@@ -127,7 +147,7 @@ const Listings = () => {
         const newPrice = e.target.value;
         setSelectedPriceRange(newPrice);
         if (filter === "all") {
-          fetchFilteredListings(newPrice, selectedCategory);
+          fetchFilteredListings(newPrice, selectedCategory, selectedAdditionalFilter);
         }
       };
 
@@ -135,8 +155,17 @@ const Listings = () => {
         const newCategory = e.target.value;
         setSelectedCategory(newCategory);
         if (filter === "all") {
-          fetchFilteredListings(selectedPriceRange, newCategory);
+          fetchFilteredListings(selectedPriceRange, newCategory, selectedAdditionalFilter);
         }
+      };
+
+      const handleAdditionalFilterChange = async (e) => {
+        const newFilter = e.target.value;
+        setSelectedAdditionalFilter(newFilter);
+
+        if (filter === "all") {
+          fetchFilteredListings(selectedPriceRange, selectedCategory, newFilter);
+        }       
       };
 
 
@@ -191,6 +220,7 @@ const Listings = () => {
     const handleResetFilters = () => {
         setSelectedPriceRange("");
         setSelectedCategory("");
+        setSelectedAdditionalFilter("");
         setCurrentPage(1);
         setFilter("all");
         fetchAndSetListings();
@@ -230,9 +260,89 @@ const Listings = () => {
         navigate(`/edit-item/${item._id}`);
     };
 
+    const handleSearch = async (e) => {
+        e.preventDefault();
+		console.log(searchQuery);
+		const result = await apiSearchItems(searchQuery);
+		if (result.success) {
+			setSearchFilter(true);
+			console.log(result.items.map(item => item._id));
+			const favorites = allListings.filter(item => item.isFavorite && result.items.map(item => item._id).includes(item._id));
+			const searchListings = allListings.filter(item => result.items.map(item => item._id).includes(item._id));
+			console.log(searchListings);
+			setCurrentPage(1);
+			setFavoritesPage(1);
+			setDisplayedListings(searchListings.slice((currentPage - 1) * listingsPerPage,
+            currentPage * listingsPerPage));
+            // Apply current pagination to the fetched favorites
+            setDisplayedFavorites(favorites.slice((favoritesPage - 1) * listingsPerPage,
+            favoritesPage * listingsPerPage));
+		} else {
+			console.error("Error searching for items:", result.message);
+			fetchAndSetListings();
+			toast.error("Error searching for items: " + result.message);
+		}
+    };
+
+	const handleClearSearch = () => {
+		setSearchQuery("");
+		setSearchFilter(false);
+		setCurrentPage(1);
+		setFavoritesPage(1);
+		if (selectedPriceRange || selectedCategory || selectedAdditionalFilter) {
+			fetchFilteredListings(selectedPriceRange, selectedCategory, selectedAdditionalFilter);
+		  } else {
+			fetchAndSetListings();
+		  }
+	}
+
 
     return (
         <div style={{ padding: "2rem", fontFamily: "'Sora', sans-serif" }}>
+        <form onSubmit={handleSearch}>
+			<TextField
+				label="Search for items" 
+				variant="outlined"
+				value={searchQuery}
+				onChange={(e) => {setSearchQuery(e.target.value);}}
+				size="small"
+				onKeyDown={(e) => {
+					if (e.key === 'Enter') {
+						handleSearch(e);
+					}
+				}}
+				sx={{
+					"& label": { color: "gold" },
+					"& label.Mui-focused": { color: "gold" },
+					"& .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+					"&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+					"& .MuiInputBase-input": { color: "gold" },
+				  }}
+				  slotProps={{
+					input: {
+						endAdornment: ( //Add an icon to the end of the input field
+						<>
+							{searchQuery && (
+							<InputAdornment position="end">
+								<IconButton
+								aria-label="clear search"
+								onClick={() => {handleClearSearch()}}
+								edge="end"
+								size="small"
+								>
+								<ClearIcon style={{ color: "gold" }} />
+								</IconButton>
+							</InputAdornment>
+							)}
+						</>
+						),
+						}
+					}}
+				/>
+			<IconButton type="submit" aria-label="search" >
+				<SearchIcon style={{ fill: "gold" }} />
+			</IconButton>
+    	</form>
         <Box sx={{ my: 3, display: "flex", justifyContent: "center" }}>
           <ToggleButtonGroup value={filter} exclusive onChange={handleFilterChange}>
             <ToggleButton value="all">All Listings</ToggleButton>
@@ -285,6 +395,25 @@ const Listings = () => {
                 {CATEGORY_OPTIONS.map((cat, idx) => (
                   <MenuItem key={idx} value={cat}>{cat}</MenuItem>
                 ))}
+              </Select>
+            </FormControl>
+
+            <FormControl sx={{ minWidth: 180 }}>
+              <Select
+                value={selectedAdditionalFilter}
+                onChange={handleAdditionalFilterChange}
+                displayEmpty
+                sx={{
+                  color: "white", backgroundColor: "#121212",
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+                  "& .MuiSvgIcon-root": { color: "#FFD700" }
+                }}
+              >
+                <MenuItem value="">Additional Filters</MenuItem>
+                <MenuItem value="isBestOffer">Best Offer</MenuItem>
+                <MenuItem value="isUrgent">Urgent</MenuItem>
+                <MenuItem value="isBestOffer,isUrgent">Best Offer and Urgent</MenuItem>
               </Select>
             </FormControl>
 
@@ -353,6 +482,12 @@ const Listings = () => {
                         <Typography variant="body2" sx={{ mt: 1, color: "white" }}>
                         <strong>Description:</strong> {item.description}
                         </Typography>
+                        {item.isBestOffer && (
+                            <Chip label="Best Offer" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
+                        )}
+                        {item.isUrgent && (
+                            <Chip label="Urgent" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
+                        )}
                     </CardContent>
 
                     <CardActions sx={{ px: 2, pb: 2 }}>
