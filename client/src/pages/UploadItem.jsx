@@ -2,7 +2,8 @@ import React, { useState, useContext, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import PurdueLogo from "../assets/PurdueLogo.png";
 import "./UploadItem.css";
-import { Select, FormControl, InputLabel, MenuItem, TextField } from "@mui/material";
+import { Select, FormControl, InputLabel, MenuItem, TextField, Box, Typography, 
+    FormGroup, FormControlLabel, Checkbox, FormHelperText, FormLabel, OutlinedInput, Chip } from "@mui/material";
 import { UserContext } from "../UserContext";
 import { useDropzone } from "react-dropzone";
 
@@ -36,7 +37,8 @@ const UploadItem = () => {
     const [image, setImage] = useState(null);
     const { user } = useContext(UserContext); // Get the user object from context
     const [preview, setPreview] = useState(null);
-
+    const [isBestOffer, setIsBestOffer] = useState(false);
+    const [isUrgent, setIsUrgent] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -50,7 +52,6 @@ const UploadItem = () => {
         }
 
         try {
-            console.log(user);
 
             const email = user.email; // Use email from the user context
             // const ownerId = user._id; // This is the owner ID from the user context
@@ -63,9 +64,9 @@ const UploadItem = () => {
             formData.append("price", price);
             formData.append("category", category);
             formData.append("email", email);
+            formData.append("isBestOffer", isBestOffer);
+            formData.append("isUrgent", isUrgent);
             // formData.append("owner", ownerId); // You could also append the owner ID directly if your backend expects it this way
-
-            console.log(name, description, price, category, email, image);
 
             const uploadRes = await fetch("http://localhost:8080/api/upload/uploadItem", {
                 method: "POST",
@@ -97,6 +98,11 @@ const UploadItem = () => {
             console.error("Upload error:", err); // Log the detailed error
             toast.error("Error uploading item: Network error or server unreachable.");
         }
+    }
+
+    const handleCheckboxChange = (e) => {
+        setIsBestOffer(e.target.checked);
+        setIsUrgent(e.target.checked);
     }
 
     return (
@@ -212,8 +218,12 @@ const UploadItem = () => {
                                         />
                                     </MenuItem>
                                 </Select>
-                            </FormControl>
+                            </FormControl>                                       
                         </div>
+                        <FormGroup>
+                            <FormControlLabel control={<Checkbox checked={isBestOffer} onChange={e => setIsBestOffer(e.target.checked)} color="primary" sx={{ color: 'var(--purdue-gold)' }} />} label="Best Offer" sx={{ color: 'var(--purdue-gold)' }} />
+                            <FormControlLabel control={<Checkbox checked={isUrgent} onChange={e => setIsUrgent(e.target.checked)} color="primary" sx={{ color: 'var(--purdue-gold)' }}/>} label="Urgent" sx={{ color: 'var(--purdue-gold)' }} />
+                        </FormGroup>
                 <button type="submit">Upload</button>
             </form>
             <ToastContainer />

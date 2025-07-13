@@ -36,6 +36,14 @@ const ItemSchema = new Schema({
         type: Schema.Types.ObjectId, // This indicates it's a MongoDB ObjectId
         ref: 'User', // This tells Mongoose it refers to documents in the 'User' collection
         required: true // An item must have an owner
+    },
+    isBestOffer: {
+        type: Boolean,
+        default: false
+    },
+    isUrgent: {
+        type: Boolean,
+        default: false
     }
 });
 

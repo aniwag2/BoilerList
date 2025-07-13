@@ -6,7 +6,8 @@ import {
   Grid, Card, CardMedia, CardContent, Typography, Button, Modal, Box,
   IconButton, CardActions, ToggleButtonGroup, ToggleButton,
   FormControl, Select, MenuItem, Fade, InputAdornment,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Chip
 } from "@mui/material";
 import FlagIcon from "@mui/icons-material/Flag";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -46,6 +47,7 @@ const Listings = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
 	const [searchFilter, setSearchFilter] = useState(false);
+    const [selectedAdditionalFilter, setSelectedAdditionalFilter] = useState("");
     const listingsPerPage = 12;
 
     // State for the "Mark as Sold" confirmation dialog
@@ -98,7 +100,7 @@ const Listings = () => {
         }
     }, [displayedListings, filter, user, displayedFavorites]); // Re-run when these dependencies change
 
-    const fetchFilteredListings = async (priceRange, category) => {
+    const fetchFilteredListings = async (priceRange, category, additionalFilter) => {
         try {
           let url = "http://localhost:8080/api/filtering";
           const params = new URLSearchParams();
@@ -110,6 +112,16 @@ const Listings = () => {
           }
           if (category) {
             params.append("category", category);
+          }
+
+
+          if (additionalFilter === "isBestOffer") {
+            params.append("isBestOffer", true);
+          } else if (additionalFilter === "isUrgent") {
+            params.append("isUrgent", true);
+          } else if (additionalFilter === "isBestOffer,isUrgent") {
+            params.append("isBestOffer", true);
+            params.append("isUrgent", true);
           }
           if (params.toString()) {
             url += `?${params.toString()}`;
@@ -135,7 +147,7 @@ const Listings = () => {
         const newPrice = e.target.value;
         setSelectedPriceRange(newPrice);
         if (filter === "all") {
-          fetchFilteredListings(newPrice, selectedCategory);
+          fetchFilteredListings(newPrice, selectedCategory, selectedAdditionalFilter);
         }
       };
 
@@ -143,8 +155,17 @@ const Listings = () => {
         const newCategory = e.target.value;
         setSelectedCategory(newCategory);
         if (filter === "all") {
-          fetchFilteredListings(selectedPriceRange, newCategory);
+          fetchFilteredListings(selectedPriceRange, newCategory, selectedAdditionalFilter);
         }
+      };
+
+      const handleAdditionalFilterChange = async (e) => {
+        const newFilter = e.target.value;
+        setSelectedAdditionalFilter(newFilter);
+
+        if (filter === "all") {
+          fetchFilteredListings(selectedPriceRange, selectedCategory, newFilter);
+        }       
       };
 
 
@@ -199,6 +220,7 @@ const Listings = () => {
     const handleResetFilters = () => {
         setSelectedPriceRange("");
         setSelectedCategory("");
+        setSelectedAdditionalFilter("");
         setCurrentPage(1);
         setFilter("all");
         fetchAndSetListings();
@@ -267,8 +289,8 @@ const Listings = () => {
 		setSearchFilter(false);
 		setCurrentPage(1);
 		setFavoritesPage(1);
-		if (selectedPriceRange || selectedCategory) {
-			fetchFilteredListings(selectedPriceRange, selectedCategory);
+		if (selectedPriceRange || selectedCategory || selectedAdditionalFilter) {
+			fetchFilteredListings(selectedPriceRange, selectedCategory, selectedAdditionalFilter);
 		  } else {
 			fetchAndSetListings();
 		  }
@@ -376,6 +398,25 @@ const Listings = () => {
               </Select>
             </FormControl>
 
+            <FormControl sx={{ minWidth: 180 }}>
+              <Select
+                value={selectedAdditionalFilter}
+                onChange={handleAdditionalFilterChange}
+                displayEmpty
+                sx={{
+                  color: "white", backgroundColor: "#121212",
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#FFD700" },
+                  "& .MuiSvgIcon-root": { color: "#FFD700" }
+                }}
+              >
+                <MenuItem value="">Additional Filters</MenuItem>
+                <MenuItem value="isBestOffer">Best Offer</MenuItem>
+                <MenuItem value="isUrgent">Urgent</MenuItem>
+                <MenuItem value="isBestOffer,isUrgent">Best Offer and Urgent</MenuItem>
+              </Select>
+            </FormControl>
+
             <Button
               onClick={handleResetFilters}
               variant="outlined"
@@ -441,6 +482,12 @@ const Listings = () => {
                         <Typography variant="body2" sx={{ mt: 1, color: "white" }}>
                         <strong>Description:</strong> {item.description}
                         </Typography>
+                        {item.isBestOffer && (
+                            <Chip label="Best Offer" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
+                        )}
+                        {item.isUrgent && (
+                            <Chip label="Urgent" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
+                        )}
                     </CardContent>
 
                     <CardActions sx={{ px: 2, pb: 2 }}>

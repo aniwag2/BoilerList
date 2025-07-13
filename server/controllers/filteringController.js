@@ -2,7 +2,7 @@ const Item = require("../models/Item");
 
 const getFilteredListings = async (req, res) => {
   try {
-    const { minPrice, maxPrice, category } = req.query;
+    const { minPrice, maxPrice, category, isBestOffer, isUrgent } = req.query;
     const query = {};
 
     if (minPrice !== undefined && maxPrice !== undefined) {
@@ -16,6 +16,14 @@ const getFilteredListings = async (req, res) => {
       query.category = category;
     }
 
+    if (isBestOffer) {
+      query.isBestOffer = isBestOffer;
+    }
+
+    if (isUrgent) {
+      query.isUrgent = isUrgent;
+    }
+
     // Exclude image data to improve performance
     const items = await Item.find(query).select("-image.data");
 
@@ -26,4 +34,7 @@ const getFilteredListings = async (req, res) => {
   }
 };
 
-module.exports = { getFilteredListings };
+
+
+
+module.exports = { getFilteredListings};

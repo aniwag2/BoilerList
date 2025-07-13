@@ -11,7 +11,7 @@ async function uploadItem(req, res) {
     }
 
     //Get the item details from the request body
-    const { name, price, description, category, email } = req.body;
+    const { name, price, description, category, email, isBestOffer, isUrgent } = req.body;
     const image = req.file;
 
     //Check if all fields are present
@@ -31,7 +31,9 @@ async function uploadItem(req, res) {
                 contentType: image.mimetype,
                 data: image.buffer,
             },
-            owner: userId // <--- NEW: Associate the item with the logged-in user
+            owner: userId, // <--- NEW: Associate the item with the logged-in user
+            isBestOffer,
+            isUrgent
         });
 
         await newItem.save();
