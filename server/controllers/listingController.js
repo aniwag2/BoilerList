@@ -82,7 +82,7 @@ async function updateListing(req, res) {
     }
 
     // When Multer is used, text fields come from req.body and file from req.file
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, isBestOffer, isUrgent } = req.body;
     const imageFile = req.file; // This will contain the new image data if provided
 
     try {
@@ -104,6 +104,8 @@ async function updateListing(req, res) {
         // Convert price to a number as it comes as string from form data
         if (price !== undefined) listing.price = parseFloat(price);
         if (category !== undefined) listing.category = category;
+        if (isBestOffer !== undefined) listing.isBestOffer = isBestOffer;
+        if (isUrgent !== undefined) listing.isUrgent = isUrgent;
 
         // --- NEW LOGIC: Handle image update ---
         if (imageFile) {

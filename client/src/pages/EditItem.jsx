@@ -4,10 +4,11 @@ import { toast, ToastContainer } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom"; // NEW: useParams and useNavigate
 import PurdueLogo from "../assets/PurdueLogo.png";
 import "./UploadItem.css"; // Reuse existing CSS
-import { Select, FormControl, InputLabel, MenuItem, TextField, Button } from "@mui/material";
+import { Select, FormControl, InputLabel, MenuItem, TextField, Button, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { UserContext } from "../UserContext";
 import { useDropzone } from "react-dropzone";
 import { getListings as apiGetListings, updateListing as apiUpdateListing } from "../api/user"; // NEW: Import API functions
+import { CATEGORY_OPTIONS } from "../constants/categories";
 
 const EditItem = () => {
     const { id } = useParams(); // Get the listing ID from the URL
@@ -21,6 +22,8 @@ const EditItem = () => {
     const [image, setImage] = useState(null); // Will store the new image file
     const [preview, setPreview] = useState(null); // For local image preview
     const [existingImage, setExistingImage] = useState(null); // To display current image
+    const [isBestOffer, setIsBestOffer] = useState(false);
+    const [isUrgent, setIsUrgent] = useState(false);
 
     // Fetch existing item data when the component mounts
     useEffect(() => {
@@ -47,6 +50,8 @@ const EditItem = () => {
                     setDescription(itemToEdit.description);
                     setPrice(itemToEdit.price);
                     setCategory(itemToEdit.category);
+                    setIsBestOffer(itemToEdit.isBestOffer);
+                    setIsUrgent(itemToEdit.isUrgent);
                     // Set existing image for display
                     if (itemToEdit.image && itemToEdit.image.data) {
                         setExistingImage(`data:${itemToEdit.image.contentType};base64,${itemToEdit.image.data}`);
@@ -98,6 +103,8 @@ const EditItem = () => {
                 description,
                 price: parseFloat(price), // Ensure price is a number
                 category,
+                isBestOffer,
+                isUrgent,
                 // email: user.email, // Email should not be updated via this form if it's tied to user
             };
 
@@ -199,9 +206,11 @@ const EditItem = () => {
                             }}
                             required
                         >
-                            <MenuItem value="Electronics">Electronics</MenuItem>
-                            <MenuItem value="Books">Books</MenuItem>
-                            <MenuItem value="Furniture">Furniture</MenuItem>
+                            {CATEGORY_OPTIONS.map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
                             <MenuItem value="">Other (enter below)</MenuItem> {/* Option for custom category input */}
                         </Select>
                         {category && !["Electronics", "Books", "Furniture"].includes(category) && (
@@ -229,6 +238,16 @@ const EditItem = () => {
                         )}
                     </FormControl>
                 </div>
+                <FormGroup>
+                    <FormControlLabel control={<Checkbox checked={isBestOffer} 
+                                                onChange={e => setIsBestOffer(e.target.checked)} 
+                                                color="primary" sx={{ color: 'var(--purdue-gold)' }} />} 
+                                                label="Best Offer" sx={{ color: 'var(--purdue-gold)' }} />
+                    <FormControlLabel control={<Checkbox checked={isUrgent} 
+                                                onChange={e => setIsUrgent(e.target.checked)} 
+                                                color="primary" sx={{ color: 'var(--purdue-gold)' }}/>} 
+                                                label="Urgent" sx={{ color: 'var(--purdue-gold)' }} />
+                </FormGroup>
                 <Button type="submit" variant="contained" sx={{
                     mt: 3,
                     backgroundColor: "#FFD700",
