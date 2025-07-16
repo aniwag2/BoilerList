@@ -559,7 +559,7 @@ const Listings = () => {
                                     flexGrow: 1 // Makes button take available space
                                 }}
                             >
-                                Mark Item As Sold
+                                Mark Item As Sold/Delete
                             </Button>
                             {/* NEW: Edit Listing Button */}
                             <Button
