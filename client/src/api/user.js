@@ -89,7 +89,7 @@ export const getListings = async () => {
     }
 };
 
-// --- NEW FUNCTION: deleteListing ---
+// Function to delete listing
 export const deleteListing = async (itemId) => {
     const token = getAuthToken();
     if (!token) {
@@ -117,29 +117,26 @@ export const deleteListing = async (itemId) => {
     }
 };
 
+// Function to update listing
 export const updateListing = async (itemId, listingData, imageFile = null) => {
     const token = getAuthToken();
     if (!token) {
         return { error: true, message: "User not authenticated." };
     }
 
-    // Determine content type based on whether an image is being sent
     let headers = {
         "x-auth-token": token,
     };
     let body;
 
     if (imageFile) {
-        // If image is included, use FormData
         const formData = new FormData();
         for (const key in listingData) {
             formData.append(key, listingData[key]);
         }
         formData.append("image", imageFile);
         body = formData;
-        // Do NOT set Content-Type header; browser will set multipart/form-data with boundary
     } else {
-        // If no image, send as JSON
         headers["Content-Type"] = "application/json";
         body = JSON.stringify(listingData);
     }
@@ -173,4 +170,60 @@ export const searchItems = async (query) => {
     });
     const data = await response.json();
     return data;
+};
+
+// --- NEW FUNCTION: Change Password ---
+export const changePassword = async (passwords) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/user/change-password`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+            },
+            body: JSON.stringify(passwords), // { currentPassword, newPassword }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to change password." };
+        }
+        return { success: true, message: data.message };
+    } catch (err) {
+        console.error("API Change Password Error:", err);
+        return { error: true, message: "Network error changing password." };
+    }
+};
+
+// --- NEW FUNCTION: Delete Account ---
+export const deleteAccount = async () => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/user/delete-account`, {
+            method: "DELETE",
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to delete account." };
+        }
+        return { success: true, message: data.message };
+    } catch (err) {
+        console.error("API Delete Account Error:", err);
+        return { error: true, message: "Network error deleting account." };
+    }
 };
