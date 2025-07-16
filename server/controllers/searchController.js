@@ -12,7 +12,7 @@ async function searchQuery(req, res) {
                       index: "default",
                       text: {
                         query: query, 
-                        path: "name",
+                        path: ["name", "description"],
                         fuzzy: {
                           maxEdits: 1,
                         },

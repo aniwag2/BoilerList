@@ -2,10 +2,11 @@ import React, { useState, useContext, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import PurdueLogo from "../assets/PurdueLogo.png";
 import "./UploadItem.css";
-import { Select, FormControl, InputLabel, MenuItem, TextField, Box, Typography, 
-    FormGroup, FormControlLabel, Checkbox, FormHelperText, FormLabel, OutlinedInput, Chip } from "@mui/material";
+import { Select, FormControl, InputLabel, MenuItem, TextField, 
+    FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { UserContext } from "../UserContext";
 import { useDropzone } from "react-dropzone";
+import { CATEGORY_OPTIONS } from "../constants/categories";
 
 const UploadItem = () => {
 
@@ -205,9 +206,11 @@ const UploadItem = () => {
                                     }}
                                     required
                                 >
-                                    <MenuItem value="Electronics">Electronics</MenuItem>
-                                    <MenuItem value="Books">Books</MenuItem>
-                                    <MenuItem value="Furniture">Furniture</MenuItem>
+                                    {CATEGORY_OPTIONS.map((option) => (
+                                        <MenuItem key={option} value={option}>
+                                            {option}
+                                        </MenuItem>
+                                    ))}
                                     <MenuItem value={category}>
                                         <TextField
                                             onChange={(e) => setCategory(e.target.value)}
@@ -221,8 +224,14 @@ const UploadItem = () => {
                             </FormControl>                                       
                         </div>
                         <FormGroup>
-                            <FormControlLabel control={<Checkbox checked={isBestOffer} onChange={e => setIsBestOffer(e.target.checked)} color="primary" sx={{ color: 'var(--purdue-gold)' }} />} label="Best Offer" sx={{ color: 'var(--purdue-gold)' }} />
-                            <FormControlLabel control={<Checkbox checked={isUrgent} onChange={e => setIsUrgent(e.target.checked)} color="primary" sx={{ color: 'var(--purdue-gold)' }}/>} label="Urgent" sx={{ color: 'var(--purdue-gold)' }} />
+                            <FormControlLabel control={<Checkbox checked={isBestOffer} 
+                                                        onChange={e => setIsBestOffer(e.target.checked)} 
+                                                        color="primary" sx={{ color: 'var(--purdue-gold)' }} />} 
+                                                        label="Best Offer" sx={{ color: 'var(--purdue-gold)' }} />
+                            <FormControlLabel control={<Checkbox checked={isUrgent} 
+                                                        onChange={e => setIsUrgent(e.target.checked)} 
+                                                        color="primary" sx={{ color: 'var(--purdue-gold)' }}/>} 
+                                                        label="Urgent" sx={{ color: 'var(--purdue-gold)' }} />
                         </FormGroup>
                 <button type="submit">Upload</button>
             </form>
