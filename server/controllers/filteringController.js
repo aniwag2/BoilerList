@@ -1,8 +1,9 @@
+const mongoose = require("mongoose");
 const Item = require("../models/Item");
 
 const getFilteredListings = async (req, res) => {
   try {
-    const { minPrice, maxPrice, category, isBestOffer, isUrgent } = req.query;
+    const { minPrice, maxPrice, category, isBestOffer, isUrgent, ownerId } = req.query;
     const query = {};
 
     if (minPrice !== undefined && maxPrice !== undefined) {
@@ -16,17 +17,21 @@ const getFilteredListings = async (req, res) => {
       query.category = category;
     }
 
-    if (isBestOffer) {
-      query.isBestOffer = isBestOffer;
+    if (isBestOffer !== undefined) {
+      query.isBestOffer = isBestOffer === "true"; 
     }
 
-    if (isUrgent) {
-      query.isUrgent = isUrgent;
+    if (isUrgent !== undefined) {
+      query.isUrgent = isUrgent === "true"; 
     }
 
-    // Exclude image data to improve performance
+    if (ownerId && mongoose.Types.ObjectId.isValid(ownerId)) {
+      query.owner = ownerId;
+    }
+
+    console.log("Final query being sent to MongoDB:", query); 
+
     const items = await Item.find(query).select("-image.data");
-
     res.json({ success: true, listings: items });
   } catch (err) {
     console.error("getFilteredListings error:", err);
@@ -34,7 +39,4 @@ const getFilteredListings = async (req, res) => {
   }
 };
 
-
-
-
-module.exports = { getFilteredListings};
+module.exports = { getFilteredListings };
