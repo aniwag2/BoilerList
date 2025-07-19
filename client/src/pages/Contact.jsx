@@ -134,6 +134,61 @@ const Contact = () => {
 						</Typography>
 					</AccordionDetails>
 				</Accordion>
+
+				<Accordion>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography>Can I mark an item as urgent?</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Typography>
+							Yes, you can select the “Urgent” checkbox when uploading your item. This helps buyers know you’re looking to sell quickly.
+						</Typography>
+					</AccordionDetails>
+				</Accordion>
+
+				<Accordion>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography>How do I edit or delete my listing?</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Typography>
+							Go to the "Dashboard" page, find your item, and click on the "Edit" or "Mark as Sold/Delete" button to update or remove it.
+						</Typography>
+					</AccordionDetails>
+				</Accordion>
+
+				<Accordion>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography>How do I favorite or save an item?</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Typography>
+							Click the heart icon on any listing to add it to your favorites. You can view all your saved items under the “My Favorites” tab.
+						</Typography>
+					</AccordionDetails>
+				</Accordion>
+
+				<Accordion>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography>What is the “Best Offer” label?</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Typography>
+							If a seller is open to offers, they can mark the item as “Best Offer.” Feel free to message them and negotiate the price.
+						</Typography>
+					</AccordionDetails>
+				</Accordion>
+
+				<Accordion>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography>Can I report a user?</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<Typography>
+							Currently, you can only report a specific listing. If you notice repeated inappropriate behavior, please contact our team via the form or email.
+						</Typography>
+					</AccordionDetails>
+				</Accordion>
 			</div>
 
 			<ToastContainer />

@@ -28,6 +28,9 @@ import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Listings.css";
+import Tooltip from '@mui/material/Tooltip'; 
+import { Checkbox, FormControlLabel } from "@mui/material";
+
 
 const Listings = () => {
     const navigate = useNavigate();
@@ -49,7 +52,7 @@ const Listings = () => {
 	const [searchFilter, setSearchFilter] = useState(false);
     const [selectedAdditionalFilter, setSelectedAdditionalFilter] = useState("");
     const listingsPerPage = 12;
-
+    const [showMyItemsOnly, setShowMyItemsOnly] = useState(false);
     // State for the "Mark as Sold" confirmation dialog
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [listingToDelete, setListingToDelete] = useState(null);
@@ -100,43 +103,57 @@ const Listings = () => {
         }
     }, [displayedListings, filter, user, displayedFavorites]); // Re-run when these dependencies change
 
-    const fetchFilteredListings = async (priceRange, category, additionalFilter) => {
+      const fetchFilteredListings = async (priceRange, category, additionalFilter, showMyItemsOnly) => {
         try {
           let url = "http://localhost:8080/api/filtering";
           const params = new URLSearchParams();
+
+          console.log("Params to fetchFilteredListings:", {
+            priceRange,
+            category,
+            additionalFilter,
+            showMyItemsOnly,
+            userId: user?._id,
+          });
 
           if (priceRange) {
             const [minPrice, maxPrice] = priceRange.split("-");
             params.append("minPrice", minPrice);
             params.append("maxPrice", maxPrice);
           }
+
           if (category) {
             params.append("category", category);
           }
 
+          if (showMyItemsOnly && user?._id) {
+            console.log("Adding ownerId to query:", user._id);
+            params.append("ownerId", user._id);
+          }
 
-          if (additionalFilter === "isBestOffer") {
-            params.append("isBestOffer", true);
-          } else if (additionalFilter === "isUrgent") {
-            params.append("isUrgent", true);
-          } else if (additionalFilter === "isBestOffer,isUrgent") {
-            params.append("isBestOffer", true);
-            params.append("isUrgent", true);
+          if (additionalFilter?.includes("isBestOffer")) {
+            params.append("isBestOffer", "true");
           }
-          if (params.toString()) {
-            url += `?${params.toString()}`;
+          if (additionalFilter?.includes("isUrgent")) {
+            params.append("isUrgent", "true");
           }
+
+          const paramString = params.toString();
+          if (paramString) {
+            url += `?${paramString}`;
+          }
+
+          console.log("Final fetch URL:", url);
 
           const res = await fetch(url);
           const data = await res.json();
-          if (data.success)
-            {
-                setAllListings(data.listings);
-                // Reset to page 1 for filtered results
-                setCurrentPage(1);
-                setDisplayedListings(data.listings.slice(0, listingsPerPage));
-                console.log(data.listings);
-            }
+
+          if (data.success) {
+            setAllListings(data.listings);
+            setCurrentPage(1);
+            setDisplayedListings(data.listings.slice(0, listingsPerPage));
+            console.log("Filtered listings:", data.listings);
+          }
         } catch (err) {
           console.error("Network error:", err);
           toast.error("Network error applying filters.");
@@ -361,6 +378,29 @@ const Listings = () => {
               alignItems: "center"
             }}
           >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Checkbox
+        checked={showMyItemsOnly}
+        onChange={(e) => {
+          const checked = e.target.checked;
+          setShowMyItemsOnly(checked);
+          if (filter === "all") {
+            fetchFilteredListings(
+              selectedPriceRange,
+              selectedCategory,
+              selectedAdditionalFilter,
+              checked 
+            );
+          }
+        }}
+  sx={{ color: "#FFD700", '&.Mui-checked': { color: "#FFD700" } }}
+/>
+  <Tooltip title="Show only items you've listed" arrow>
+    <Typography sx={{ color: "#FFD700", fontSize: "0.9rem", cursor: "default" }}>
+      My Items
+    </Typography>
+  </Tooltip>
+</Box>
             <FormControl sx={{ minWidth: 180 }}>
               <Select
                 value={selectedPriceRange}
@@ -485,9 +525,20 @@ const Listings = () => {
                         {item.isBestOffer && (
                             <Chip label="Best Offer" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
                         )}
-                        {item.isUrgent && (
-                            <Chip label="Urgent" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
-                        )}
+                          {item.isUrgent && (
+                            <Tooltip
+                              title="This item needs to be sold ASAP. Open to negotiate!"
+                              arrow
+                              placement="top"
+                            >
+                              <Chip
+                                label="Urgent"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ mt: 1, color: "white", cursor: "pointer" }}
+                              />
+                            </Tooltip>
+                          )}
                     </CardContent>
 
                     <CardActions sx={{ px: 2, pb: 2 }}>
