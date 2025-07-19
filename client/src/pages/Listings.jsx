@@ -28,6 +28,7 @@ import { CATEGORY_OPTIONS } from "../constants/categories";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Listings.css";
+import Tooltip from '@mui/material/Tooltip'; 
 
 const Listings = () => {
     const navigate = useNavigate();
@@ -485,9 +486,20 @@ const Listings = () => {
                         {item.isBestOffer && (
                             <Chip label="Best Offer" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
                         )}
-                        {item.isUrgent && (
-                            <Chip label="Urgent" color="primary" variant="outlined" sx={{ mt: 1, color: "white" }} />
-                        )}
+                          {item.isUrgent && (
+                            <Tooltip
+                              title="This item needs to be sold ASAP. Open to negotiate!"
+                              arrow
+                              placement="top"
+                            >
+                              <Chip
+                                label="Urgent"
+                                color="primary"
+                                variant="outlined"
+                                sx={{ mt: 1, color: "white", cursor: "pointer" }}
+                              />
+                            </Tooltip>
+                          )}
                     </CardContent>
 
                     <CardActions sx={{ px: 2, pb: 2 }}>
