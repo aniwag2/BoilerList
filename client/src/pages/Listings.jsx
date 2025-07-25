@@ -105,7 +105,7 @@ const Listings = () => {
 
       const fetchFilteredListings = async (priceRange, category, additionalFilter, showMyItemsOnly) => {
         try {
-          let url = "http://localhost:8080/api/filtering";
+          let url = "https://api.aniwaghray.com/api/filtering";
           const params = new URLSearchParams();
 
           console.log("Params to fetchFilteredListings:", {
