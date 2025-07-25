@@ -19,7 +19,7 @@ const ItemSchema = new Schema({
         type: String,
         required: true
     },
-    email: { // You can keep this for display/contact, but it's not for ownership verification
+    email: {
         type: String,
         required: true
     },
@@ -31,11 +31,10 @@ const ItemSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    // --- NEW FIELD ---
     owner: {
-        type: Schema.Types.ObjectId, // This indicates it's a MongoDB ObjectId
-        ref: 'User', // This tells Mongoose it refers to documents in the 'User' collection
-        required: true // An item must have an owner
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
     isBestOffer: {
         type: Boolean,
@@ -44,7 +43,27 @@ const ItemSchema = new Schema({
     isUrgent: {
         type: Boolean,
         default: false
-    }
+    },
+    // --- NEW FIELD: interestedBuyers ---
+    interestedBuyers: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true // Each interested buyer must have a user ID
+        },
+        username: {
+            type: String,
+            required: true // Store username for easier access in emails/display
+        },
+        email: {
+            type: String,
+            required: true // Store email for direct contact by seller
+        },
+        expressedAt: {
+            type: Date,
+            default: Date.now // Timestamp when interest was expressed
+        }
+    }]
 });
 
 module.exports = mongoose.model('Item', ItemSchema);
