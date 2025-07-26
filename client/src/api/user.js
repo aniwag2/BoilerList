@@ -1,5 +1,5 @@
 // client/src/api/user.js
-const API_BASE_URL = 'http://localhost:8080/api'; // Base URL for your API endpoints
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Helper to get auth token from localStorage
 const getAuthToken = () => {
@@ -13,19 +13,15 @@ export const login = async (credentials) => {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: "include", // Important for sending/receiving cookies if using sessions/JWTs
+            credentials: "include",
             body: JSON.stringify(credentials),
         });
 
-        const data = await response.json(); // Always parse the JSON response
+        const data = await response.json();
 
         if (!response.ok) {
-            // If the HTTP status is not in the 200-299 range (e.g., 400, 500)
             return { error: true, message: data.message || "An error occurred during login." };
         }
-
-        // If response.ok is true, login was successful.
-        // Backend MUST send { message: "...", user: { ... }, token: "..." }
         return { success: true, user: data.user, token: data.token, message: data.message };
     } catch (err) {
         console.error("API Login Network/Parsing Error:", err);
@@ -45,7 +41,7 @@ export const toggleFavorite = async (itemId) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-auth-token": token, // Send JWT token in header
+                "x-auth-token": token,
             },
             body: JSON.stringify({ itemId }),
         });
@@ -55,7 +51,7 @@ export const toggleFavorite = async (itemId) => {
         if (!response.ok) {
             return { error: true, message: data.message || "Failed to toggle favorite." };
         }
-        return { success: true, message: data.message, isFavorite: data.isFavorite }; // isFavorite confirms new status
+        return { success: true, message: data.message, isFavorite: data.isFavorite };
     } catch (err) {
         console.error("API Toggle Favorite Error:", err);
         return { error: true, message: "Network error toggling favorite." };
@@ -64,10 +60,10 @@ export const toggleFavorite = async (itemId) => {
 
 // Function to get listings, sending auth token if available
 export const getListings = async () => {
-    const token = getAuthToken(); // Get token. It might be null if not logged in.
+    const token = getAuthToken();
     let headers = {};
     if (token) {
-        headers['x-auth-token'] = token; // Add token to header if available
+        headers['x-auth-token'] = token;
     }
 
     try {
@@ -82,7 +78,7 @@ export const getListings = async () => {
         if (!response.ok) {
             return { error: true, message: data.message || "Failed to fetch listings." };
         }
-        return { success: true, listings: data }; // Backend directly sends listings array
+        return { success: true, listings: data };
     } catch (err) {
         console.error("API Get Listings Error:", err);
         return { error: true, message: "Network error fetching listings." };
@@ -172,7 +168,6 @@ export const searchItems = async (query) => {
     return data;
 };
 
-// --- NEW FUNCTION: Change Password ---
 export const changePassword = async (passwords) => {
     const token = getAuthToken();
     if (!token) {
@@ -186,7 +181,7 @@ export const changePassword = async (passwords) => {
                 "Content-Type": "application/json",
                 "x-auth-token": token,
             },
-            body: JSON.stringify(passwords), // { currentPassword, newPassword }
+            body: JSON.stringify(passwords),
         });
 
         const data = await response.json();
@@ -201,7 +196,6 @@ export const changePassword = async (passwords) => {
     }
 };
 
-// --- NEW FUNCTION: Delete Account ---
 export const deleteAccount = async () => {
     const token = getAuthToken();
     if (!token) {
@@ -225,5 +219,62 @@ export const deleteAccount = async () => {
     } catch (err) {
         console.error("API Delete Account Error:", err);
         return { error: true, message: "Network error deleting account." };
+    }
+};
+
+// --- NEW FUNCTION: expressInterest ---
+export const expressInterest = async (listingId) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/listings/${listingId}/express-interest`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+            },
+            // No body needed as buyer info comes from token
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to express interest." };
+        }
+        // Return interestedBuyersCount and hasExpressedInterest from backend response
+        return { success: true, message: data.message, interestedBuyersCount: data.interestedBuyersCount, hasExpressedInterest: data.hasExpressedInterest };
+    } catch (err) {
+        console.error("API Express Interest Error:", err);
+        return { error: true, message: "Network error expressing interest." };
+    }
+};
+
+// --- NEW FUNCTION: sendInterestedBuyersEmail ---
+export const sendInterestedBuyersEmail = async (listingId) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/listings/${listingId}/send-interested-buyers-email`, {
+            method: "GET", // This is a GET request as it only retrieves and sends data via email
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to send buyers list email." };
+        }
+        return { success: true, message: data.message };
+    } catch (err) {
+        console.error("API Send Buyers List Email Error:", err);
+        return { error: true, message: "Network error sending buyers list email." };
     }
 };
