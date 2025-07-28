@@ -12,6 +12,8 @@ import { UserContext, UserProvider } from './UserContext';
 import UploadItem from './pages/UploadItem';
 import Contact from './pages/Contact';
 import EditItem from './pages/EditItem'; // NEW: Import EditItem
+import Chatbot from './components/Chatbot';
+
 
 // Helper component to wrap routes that need the Navbar
 const LayoutWithNavbar = ({ children }) => {
@@ -28,6 +30,7 @@ const LayoutWithNavbar = ({ children }) => {
 function App() {
     return (
         <UserProvider>
+            <Chatbot />
             <Router>
                 <div className="App">
                     <Routes>
