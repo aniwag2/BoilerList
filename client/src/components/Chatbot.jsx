@@ -27,13 +27,13 @@ const Chatbot = () => {
 
     return (
     <>
-        <Fab
+        {user && <Fab
             color="primary"
             sx={{ position: "fixed", bottom: 24, right: 24, zIndex: 1300, color: "black", backgroundColor: "gold" }}
             onClick={handleOpen}
         >
             <ChatIcon />
-        </Fab>
+        </Fab>}
         <Modal
             open={open}
             onClose={handleClose}

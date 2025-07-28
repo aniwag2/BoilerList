@@ -12,8 +12,11 @@ const Messaging = ({messages, setMessages}) => {
         if (!input.trim()) return;
         setMessages(prev => [...prev, { sender: "user", content: input }]);
         setInput("");
-        const response = await ragQuery(input);
-        setMessages(prev => [...prev, { sender: "bot", content: response.message }]);
+        setTimeout(async () => {
+            setMessages(prev => [...prev, { sender: "bot", content: "..." }]);
+            const response = await ragQuery(input);
+            setMessages(prev => [...prev.slice(0, -1), { sender: "bot", content: response.message }]); 
+        }, 1000);
     };
 
     // Automatically scroll to the bottom of the list when new messages are added
