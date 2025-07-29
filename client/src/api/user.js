@@ -278,3 +278,15 @@ export const sendInterestedBuyersEmail = async (listingId) => {
         return { error: true, message: "Network error sending buyers list email." };
     }
 };
+
+export const ragQuery = async (query) => {
+    const response = await fetch(`${API_BASE_URL}/rag`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+    });
+    const data = await response.json();
+    return data;
+};

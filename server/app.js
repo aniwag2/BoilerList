@@ -38,6 +38,7 @@ const reportRoutes = require("./routes/report");
 const userRoutes = require("./routes/user"); 
 const filteringRoutes = require("./routes/filtering");
 const searchRoutes = require("./routes/search");
+const ragRoutes = require("./routes/rag");
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -48,6 +49,7 @@ app.use("/api/report", reportRoutes);
 app.use("/api/user", userRoutes); 
 app.use("/api/filtering", filteringRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/rag", ragRoutes);
 
 // port
 const port = process.env.PORT || 8080;
