@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Item = require('../models/Item');
 const User = require('../models/User');
-const emailSender = require('../utils/emailSender'); // NEW: Import email sender
+const emailSender = require('../utils/emailSender'); // Ensure this import is here
 
 async function getListings(req, res) {
     const userId = req.user ? req.user.id : null;
@@ -22,8 +22,7 @@ async function getListings(req, res) {
                     ...item,
                     isFavorite: favoritedItemIds.includes(item._id.toString()),
                     isOwner: item.owner && item.owner._id ? item.owner._id.toString() === userId.toString() : false,
-                    // FIX: Add || [] to handle cases where interestedBuyers might be undefined for old listings
-                    hasExpressedInterest: (item.interestedBuyers || []).some( // <--- FIX IS HERE
+                    hasExpressedInterest: (item.interestedBuyers || []).some(
                         buyerEntry => buyerEntry.userId && buyerEntry.userId._id.toString() === userId.toString()
                     )
                 }));
@@ -31,14 +30,12 @@ async function getListings(req, res) {
             }
         }
 
-        // If no user is logged in, return listings without personalized statuses
         return res.json(listings.map(item => ({
             ...item,
             isFavorite: false,
             isOwner: false,
-            // FIX: Add || [] here as well
-            hasExpressedInterest: (item.interestedBuyers || []).some( // <--- FIX IS HERE
-                buyerEntry => buyerEntry.userId && buyerEntry.userId._id.toString() === userId?.toString() // Use optional chaining for userId on the right too
+            hasExpressedInterest: (item.interestedBuyers || []).some(
+                buyerEntry => buyerEntry.userId && buyerEntry.userId._id.toString() === userId?.toString()
             )
         })));
 
@@ -47,6 +44,47 @@ async function getListings(req, res) {
         res.status(500).json({ message: 'Server error fetching listings.' });
     }
 }
+
+// Helper to get unique notification recipients (interested buyers + favoriting users)
+async function getUniqueNotificationRecipients(itemId, listingOwnerId) {
+    // 1. Get interested buyers directly from the item
+    const item = await Item.findById(itemId)
+        .populate('interestedBuyers.userId', 'username email')
+        .select('interestedBuyers name') // Select 'name' to pass to email template
+        .lean();
+
+    if (!item) return { recipients: new Map(), listingName: '' };
+
+    const recipients = new Map(); // Map to store unique recipients by userId: { userId -> { username, email } }
+
+    item.interestedBuyers.forEach(buyerEntry => {
+        if (buyerEntry.userId && buyerEntry.userId._id.toString() !== listingOwnerId.toString()) { // Exclude seller
+            recipients.set(buyerEntry.userId._id.toString(), {
+                username: buyerEntry.userId.username,
+                email: buyerEntry.userId.email
+            });
+        }
+    });
+
+    // 2. Find users who favorited this item (excluding the owner)
+    const favoritingUsers = await User.find({
+        favorites: itemId,
+        _id: { $ne: listingOwnerId } // Exclude the owner of the listing
+    }).select('username email').lean();
+
+    favoritingUsers.forEach(user => {
+        // Add to map only if not already added by interestedBuyers
+        if (!recipients.has(user._id.toString())) {
+            recipients.set(user._id.toString(), {
+                username: user.username,
+                email: user.email
+            });
+        }
+    });
+
+    return { recipients: Array.from(recipients.values()), listingName: item.name };
+}
+
 
 async function deleteListing(req, res) {
     const { id } = req.params;
@@ -57,23 +95,36 @@ async function deleteListing(req, res) {
     }
 
     try {
-        const listing = await Item.findById(id);
+        // Fetch listing BEFORE deletion to get details for notifications
+        const listing = await Item.findById(id).populate('owner', '_id').lean(); // Get owner ID for recipient exclusion
 
         if (!listing) {
             return res.status(404).json({ message: 'Listing not found.' });
         }
 
-        if (listing.owner.toString() !== userId.toString()) {
+        if (listing.owner._id.toString() !== userId.toString()) {
             return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this listing.' });
         }
 
-        await Item.findByIdAndDelete(id);
+        // --- NEW: Send notifications BEFORE deleting the item ---
+        const { recipients, listingName } = await getUniqueNotificationRecipients(listing._id, listing.owner._id);
 
-        // Remove this item from any user's favorites lists if it was favorited
+        await Item.findByIdAndDelete(id); // Now delete the item
+
+        // Clean up from favorites (already doing this)
         await User.updateMany(
             { favorites: id },
             { $pull: { favorites: id } }
         );
+
+        // Send notifications asynchronously (don't await this, let it run in background)
+        recipients.forEach(async (recipient) => {
+            try {
+                await emailSender.sendListingSoldEmail(recipient.email, recipient.username, listingName);
+            } catch (emailError) {
+                console.error(`Failed to send sold notification email to ${recipient.email}:`, emailError);
+            }
+        });
 
         res.json({ message: 'Listing marked as sold and removed successfully.' });
 
@@ -86,6 +137,7 @@ async function deleteListing(req, res) {
     }
 }
 
+// --- UPDATED FUNCTION: updateListing to handle image and send notifications ---
 async function updateListing(req, res) {
     const { id } = req.params;
     const userId = req.user ? req.user.id : null;
@@ -98,16 +150,21 @@ async function updateListing(req, res) {
     const imageFile = req.file;
 
     try {
-        const listing = await Item.findById(id);
+        // Fetch the current listing details before update for notification purposes
+        const listing = await Item.findById(id).populate('owner', '_id'); // Need owner ID for getUniqueNotificationRecipients
 
         if (!listing) {
             return res.status(404).json({ message: 'Listing not found.' });
         }
 
-        if (listing.owner.toString() !== userId.toString()) {
+        if (listing.owner._id.toString() !== userId.toString()) {
             return res.status(403).json({ message: 'Forbidden: You do not have permission to edit this listing.' });
         }
 
+        // Store original listing name for notification if name changes
+        const originalListingName = listing.name;
+
+        // Update fields
         if (name !== undefined) listing.name = name;
         if (description !== undefined) listing.description = description;
         if (price !== undefined) listing.price = parseFloat(price);
@@ -122,7 +179,18 @@ async function updateListing(req, res) {
             };
         }
 
-        await listing.save();
+        await listing.save(); // Save the updated listing
+
+        // --- NEW: Send notifications to interested/favorited buyers ---
+        const { recipients, listingName } = await getUniqueNotificationRecipients(listing._id, listing.owner._id);
+
+        recipients.forEach(async (recipient) => {
+            try {
+                await emailSender.sendListingUpdatedEmail(recipient.email, recipient.username, listingName);
+            } catch (emailError) {
+                console.error(`Failed to send updated notification email to ${recipient.email}:`, emailError);
+            }
+        });
 
         res.json({ message: 'Listing updated successfully.', listing });
 
@@ -135,30 +203,24 @@ async function updateListing(req, res) {
     }
 }
 
-// --- NEW FUNCTION: Express Interest in a Listing ---
 const expressInterest = async (req, res) => {
     const { id: listingId } = req.params;
-    // Buyer's info comes from the authenticated token via req.user
     const { id: buyerUserId, username: buyerUsername, email: buyerEmail } = req.user;
 
     if (!buyerUserId || !buyerUsername || !buyerEmail) {
-        // This check should ideally be redundant if auth middleware works correctly
         return res.status(401).json({ message: 'Unauthorized: Buyer information missing from token.' });
     }
 
     try {
-        // Find the listing and populate its owner's details for email notification
         const listing = await Item.findById(listingId).populate('owner', 'email username');
         if (!listing) {
             return res.status(404).json({ message: 'Listing not found.' });
         }
 
-        // Prevent owner from expressing interest in their own item
         if (listing.owner._id.toString() === buyerUserId.toString()) {
             return res.status(403).json({ message: 'You cannot express interest in your own listing.' });
         }
 
-        // Check if buyer has already expressed interest to prevent duplicates
         const alreadyInterested = listing.interestedBuyers.some(
             (buyerEntry) => buyerEntry.userId.toString() === buyerUserId.toString()
         );
@@ -167,7 +229,6 @@ const expressInterest = async (req, res) => {
             return res.status(409).json({ message: 'You have already expressed interest in this listing.' });
         }
 
-        // Add buyer's details to the interestedBuyers array
         listing.interestedBuyers.push({
             userId: buyerUserId,
             username: buyerUsername,
@@ -177,7 +238,6 @@ const expressInterest = async (req, res) => {
 
         await listing.save();
 
-        // Send email to the seller
         const emailResult = await emailSender.sendBuyerInterestEmail(
             listing.owner.email,
             listing.owner.username,
@@ -190,12 +250,11 @@ const expressInterest = async (req, res) => {
             res.status(200).json({
                 success: true,
                 message: 'Interest expressed successfully and seller notified!',
-                interestedBuyersCount: listing.interestedBuyers.length, // Send back new count
-                hasExpressedInterest: true // Confirm status for client-side button disable
+                interestedBuyersCount: listing.interestedBuyers.length,
+                hasExpressedInterest: true
             });
         } else {
             console.error('Failed to send email to seller:', emailResult.error);
-            // Even if email fails, interest is recorded in DB. Notify user about email issue.
             res.status(200).json({
                 success: true,
                 message: 'Interest expressed, but there was an issue notifying the seller by email.',
@@ -213,37 +272,30 @@ const expressInterest = async (req, res) => {
     }
 };
 
-// --- NEW FUNCTION: Send Interested Buyers List Email ---
 const sendInterestedBuyersEmail = async (req, res) => {
     const { id: listingId } = req.params;
-    const { id: userId } = req.user; // Seller's user ID from authenticated token
+    const { id: userId } = req.user;
 
     try {
-        // Find the listing and populate owner and interested buyers details
-        // We use .populate('interestedBuyers.userId', 'username email') to get full user data
-        // for each interested buyer, as only their userId is stored by default in interestedBuyers array.
         const listing = await Item.findById(listingId)
             .populate('owner', 'email username')
-            .populate('interestedBuyers.userId', 'username email') // Populate the actual User document fields
-            .lean(); // Use .lean() as we are not modifying and want faster reads
+            .populate('interestedBuyers.userId', 'username email')
+            .lean();
 
         if (!listing) {
             return res.status(404).json({ message: 'Listing not found.' });
         }
 
-        // Verify that the requesting user is the owner of the listing
         if (listing.owner._id.toString() !== userId.toString()) {
             return res.status(403).json({ message: 'Forbidden: You do not own this listing.' });
         }
 
-        // Map interestedBuyers to the format expected by the email sender (which is already done by populate)
         const interestedBuyersDetails = listing.interestedBuyers.map(buyerEntry => ({
-            username: buyerEntry.userId.username, // Access populated user data
-            email: buyerEntry.userId.email,       // Access populated user data
+            username: buyerEntry.userId.username,
+            email: buyerEntry.userId.email,
             expressedAt: buyerEntry.expressedAt
         }));
 
-        // Send email to the seller with the list of interested buyers
         const emailResult = await emailSender.sendInterestedBuyersListEmail(
             listing.owner.email,
             listing.owner.username,
@@ -272,6 +324,6 @@ module.exports = {
     getListings,
     deleteListing,
     updateListing,
-    expressInterest, // NEW: Export new function
-    sendInterestedBuyersEmail // NEW: Export new function
+    expressInterest,
+    sendInterestedBuyersEmail
 };

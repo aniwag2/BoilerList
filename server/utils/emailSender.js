@@ -1,3 +1,4 @@
+// server/utils/emailSender.js
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -37,7 +38,6 @@ const sendRegistrationEmail = async (toEmail, username) => {
     }
 };
 
-// --- NEW FUNCTION: sendBuyerInterestEmail ---
 const sendBuyerInterestEmail = async (sellerEmail, sellerUsername, buyerUsername, buyerEmail, listingName) => {
     const mailOptions = {
         from: process.env.GMAIL_USER,
@@ -69,7 +69,6 @@ const sendBuyerInterestEmail = async (sellerEmail, sellerUsername, buyerUsername
     }
 };
 
-// --- NEW FUNCTION: sendInterestedBuyersListEmail ---
 const sendInterestedBuyersListEmail = async (sellerEmail, sellerUsername, listingName, interestedBuyers) => {
     let buyersListHtml = '';
     if (interestedBuyers && interestedBuyers.length > 0) {
@@ -121,9 +120,73 @@ const sendInterestedBuyersListEmail = async (sellerEmail, sellerUsername, listin
     }
 };
 
+// --- NEW FUNCTION: sendListingUpdatedEmail ---
+const sendListingUpdatedEmail = async (toEmail, buyerUsername, listingName) => {
+    const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: toEmail,
+        subject: `BoilerList: Update on "${listingName}"`,
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2 style="color: #c28e0e;">Listing Update Notification</h2>
+                <p>Hi ${buyerUsername},</p>
+                <p>This is to let you know that the listing you are interested in or have favorited, <strong>"${listingName}"</strong>, has been updated by the seller.</p>
+                <p>Please visit BoilerList to see the latest changes!</p>
+                <br>
+                <p>Best regards,</p>
+                <p>The BoilerList Team</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 0.8em; color: #777;">This is an automated email, please do not reply.</p>
+            </div>
+        `,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Listing updated email sent: %s', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('Error sending listing updated email:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+// --- NEW FUNCTION: sendListingSoldEmail ---
+const sendListingSoldEmail = async (toEmail, buyerUsername, listingName) => {
+    const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: toEmail,
+        subject: `BoilerList: "${listingName}" is no longer available`,
+        html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2 style="color: #c28e0e;">Listing Status Update</h2>
+                <p>Hi ${buyerUsername},</p>
+                <p>This is to inform you that the listing you were interested in or had favorited, <strong>"${listingName}"</strong>, has been marked as sold or deleted by the seller and is no longer available on BoilerList.</p>
+                <p>We apologize if this news is disappointing, but there are many other great listings available!</p>
+                <br>
+                <p>Best regards,</p>
+                <p>The BoilerList Team</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="font-size: 0.8em; color: #777;">This is an automated email, please do not reply.</p>
+            </div>
+        `,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Listing sold/deleted email sent: %s', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('Error sending listing sold/deleted email:', error);
+        return { success: false, error: error.message };
+    }
+};
+
 
 module.exports = {
     sendRegistrationEmail,
-    sendBuyerInterestEmail, // Export new function
-    sendInterestedBuyersListEmail, // Export new function
+    sendBuyerInterestEmail,
+    sendInterestedBuyersListEmail,
+    sendListingUpdatedEmail, // Export new function
+    sendListingSoldEmail,    // Export new function
 };
