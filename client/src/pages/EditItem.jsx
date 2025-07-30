@@ -249,34 +249,18 @@ const EditItem = () => {
                                     {option}
                                 </MenuItem>
                             ))}
-                            <MenuItem value="">Other (enter below)</MenuItem>
                         </Select>
-                        {category && !CATEGORY_OPTIONS.includes(category) && ( // Use CATEGORY_OPTIONS for check
-                            <TextField
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                fullWidth
-                                placeholder="Enter custom category"
-                                margin="normal"
-                                sx={{
-                                    mt: 1,
-                                    '& .MuiInputBase-input': { color: 'var(--purdue-gold)' },
-                                    '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--purdue-gold)' }, '&:hover fieldset': { borderColor: 'var(--purdue-gold)' }, '&.Mui-focused fieldset': { borderColor: 'var(--purdue-gold)' } },
-                                    '& .MuiInputLabel-root': { color: 'var(--purdue-gold)' },
-                                }}
-                            />
-                        )}
                     </FormControl>
                 </div>
                 {/* Checkboxes */}
                 <FormGroup>
                     <FormControlLabel control={<Checkbox checked={isBestOffer}
                                                     onChange={e => setIsBestOffer(e.target.checked)}
-                                                    color="primary" sx={{ color: 'var(--purdue-gold)' }} />}
+                                                    color="primary" sx={{ color: "var(--purdue-gold)", '&.Mui-checked': { color: "var(--purdue-gold)" } }} />}
                                                     label="Best Offer" sx={{ color: 'var(--purdue-gold)' }} />
                     <FormControlLabel control={<Checkbox checked={isUrgent}
                                                     onChange={e => setIsUrgent(e.target.checked)}
-                                                    color="primary" sx={{ color: 'var(--purdue-gold)' }}/>}
+                                                    color="primary" sx={{ color: "var(--purdue-gold)", '&.Mui-checked': { color: "var(--purdue-gold)" } }}/>}
                                                     label="Urgent" sx={{ color: 'var(--purdue-gold)' }} />
                 </FormGroup>
                 <Button type="submit" variant="contained" sx={{
