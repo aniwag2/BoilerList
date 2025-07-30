@@ -31,8 +31,21 @@ const getFilteredListings = async (req, res) => {
 
     console.log("Final query being sent to MongoDB:", query); 
 
-    const items = await Item.find(query).select("-image.data");
+    const rawItems = await Item.find(query);
+    const items = rawItems.map(item => {
+      const itemObj = item.toObject();
+    
+      if (itemObj.image?.data && itemObj.image?.contentType) {
+        itemObj.imageSrc = `data:${itemObj.image.contentType};base64,${itemObj.image.data.toString("base64")}`;
+      } else {
+        itemObj.imageSrc = null;
+      }
+
+      return itemObj;
+    });
+
     res.json({ success: true, listings: items });
+
   } catch (err) {
     console.error("getFilteredListings error:", err);
     res.status(500).json({ success: false, message: "Server Error" });
