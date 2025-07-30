@@ -1,8 +1,10 @@
+// server/controllers/RAGController.js
 const { Chroma } = require("@langchain/community/vectorstores/chroma");
 const { GoogleGenerativeAIEmbeddings } = require("@langchain/google-genai");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { RunnableSequence } = require("@langchain/core/runnables");
+const chatController = require('./chatController'); // NEW: Import chatController
 
 const embeddingsModel = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GOOGLE_API_KEY,
@@ -19,9 +21,9 @@ const llm = new ChatGoogleGenerativeAI({
 function initializeVectorStore() {
     const vectorStore = new Chroma(
         embeddingsModel,
-        { 
-            collectionName: "BoilerListOfficialV1", 
-            url: "http://localhost:8000" 
+        {
+            collectionName: "BoilerListOfficialV1",
+            url: "http://localhost:8000"
         },
     );
 
@@ -30,13 +32,13 @@ function initializeVectorStore() {
 
 async function addDocuments(req, res) {
     const { pageContent, metadata, id } = req.body;
-    const vectorStore =  initializeVectorStore();
+    const vectorStore = initializeVectorStore();
     const document = {
         pageContent: pageContent,
         metadata: metadata,
     }
     await vectorStore.addDocuments([document], { ids: [id] });
-    
+
     res.json({ message: "Documents added to vector store" });
 }
 
@@ -44,7 +46,7 @@ async function initializeRetriever(query) {
     const vectorStore = initializeVectorStore();
     const testEmbedding = await embeddingsModel.embedQuery(query);
     const similaritySearchResults = await vectorStore.similaritySearchVectorWithScore([testEmbedding], 2)
-    
+
     return similaritySearchResults;
 }
 
@@ -53,7 +55,7 @@ async function generateResponse(relevantDocuments, query) {
     const pageContent = relevantDocuments.map((result) => result[0].pageContent).join("\n");
 
     const prompt = `
-    You are a helpful assistant that answer user queries about the BoilerList app. 
+    You are a helpful assistant that answer user queries about the BoilerList app.
     You can answer questions about the following documents:
     {context}
 
@@ -80,15 +82,34 @@ async function generateResponse(relevantDocuments, query) {
     return response;
 }
 
+// --- MODIFIED FUNCTION: ragQuery to save messages ---
 async function ragQuery(req, res) {
     try {
-        const { query } = req.body;
+        const { query, chatId } = req.body; // NEW: Get chatId from request body
+        const userId = req.user.id; // Get userId from auth middleware
+
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized: User not authenticated for chat.' });
+        }
+        if (!chatId) {
+            return res.status(400).json({ message: 'Chat ID is required for saving messages.' });
+        }
+
+        // 1. Save user message to DB
+        await chatController.addMessageToChat(chatId, userId, 'user', query);
+
+        // 2. Generate bot response
         const relevantDocuments = await initializeRetriever(query);
-        const response = await generateResponse(relevantDocuments, query);
-        res.json({ message: response.content });
+        const botResponse = await generateResponse(relevantDocuments, query);
+        const botContent = botResponse.content;
+
+        // 3. Save bot message to DB
+        await chatController.addMessageToChat(chatId, userId, 'bot', botContent);
+
+        res.json({ message: botContent }); // Send only the bot's content back to client
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error with the internals of the Chatbot" });
+        console.error('Error in RAG query or saving chat:', error);
+        res.status(500).json({ message: 'Error with the internals of the Chatbot or saving history.' });
     }
 };
 

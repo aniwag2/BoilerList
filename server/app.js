@@ -35,10 +35,11 @@ const uploadRoutes = require("./routes/upload");
 const listingRoutes = require("./routes/listings");
 const feedbackRoutes = require("./routes/feedback");
 const reportRoutes = require("./routes/report");
-const userRoutes = require("./routes/user"); 
+const userRoutes = require("./routes/user");
 const filteringRoutes = require("./routes/filtering");
 const searchRoutes = require("./routes/search");
 const ragRoutes = require("./routes/rag");
+const chatRoutes = require("./routes/chat"); // NEW: Import chat routes
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -46,10 +47,11 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/report", reportRoutes);
-app.use("/api/user", userRoutes); 
+app.use("/api/user", userRoutes);
 app.use("/api/filtering", filteringRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/rag", ragRoutes);
+app.use("/api/chat", chatRoutes); // NEW: Use chat routes
 
 // port
 const port = process.env.PORT || 8080;

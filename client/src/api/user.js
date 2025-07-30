@@ -279,14 +279,154 @@ export const sendInterestedBuyersEmail = async (listingId) => {
     }
 };
 
-export const ragQuery = async (query) => {
-    const response = await fetch(`${API_BASE_URL}/rag`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
-    });
-    const data = await response.json();
-    return data;
+export const ragQuery = async (query, chatId) => { // MODIFIED: Added chatId parameter
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/rag`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token, // Send token with RAG query
+            },
+            body: JSON.stringify({ query, chatId }), // MODIFIED: Send chatId
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: true, message: data.message || "Error with chatbot response." };
+        }
+        return { success: true, message: data.message }; // Assuming RAG controller sends { message: content }
+    } catch (err) {
+        console.error("API RAG Query Error:", err);
+        return { error: true, message: "Network error with chatbot." };
+    }
+};
+
+
+// --- NEW FUNCTIONS FOR CHAT MANAGEMENT ---
+
+// Create a new chat session
+export const createNewChat = async () => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/chat/new`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to create new chat." };
+        }
+        return { success: true, chat: data.chat };
+    } catch (err) {
+        console.error("API Create New Chat Error:", err);
+        return { error: true, message: "Network error creating chat." };
+    }
+};
+
+// Get all chat sessions for the authenticated user
+export const getUserChats = async () => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/chat`, {
+            method: "GET",
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to fetch user chats." };
+        }
+        return { success: true, chats: data.chats };
+    } catch (err) {
+        console.error("API Get User Chats Error:", err);
+        return { error: true, message: "Network error fetching chats." };
+    }
+};
+
+// Get messages for a specific chat session
+export const getChatMessages = async (chatId) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/chat/${chatId}`, {
+            method: "GET",
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to fetch chat messages." };
+        }
+        return { success: true, messages: data.messages };
+    } catch (err) {
+        console.error("API Get Chat Messages Error:", err);
+        return { error: true, message: "Network error fetching messages." };
+    }
+};
+
+// Update the title of a chat session
+export const updateChatTitle = async (chatId, newTitle) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/chat/${chatId}/title`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "x-auth-token": token,
+            },
+            body: JSON.stringify({ newTitle }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to update chat title." };
+        }
+        return { success: true, message: data.message, chat: data.chat };
+    } catch (err) {
+        console.error("API Update Chat Title Error:", err);
+        return { error: true, message: "Network error updating chat title." };
+    }
+};
+
+// Delete a specific chat session
+export const deleteChat = async (chatId) => {
+    const token = getAuthToken();
+    if (!token) {
+        return { error: true, message: "User not authenticated." };
+    }
+    try {
+        const response = await fetch(`${API_BASE_URL}/chat/${chatId}`, {
+            method: "DELETE",
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: true, message: data.message || "Failed to delete chat." };
+        }
+        return { success: true, message: data.message };
+    } catch (err) {
+        console.error("API Delete Chat Error:", err);
+        return { error: true, message: "Network error deleting chat." };
+    }
 };
