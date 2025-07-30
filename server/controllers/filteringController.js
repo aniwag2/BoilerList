@@ -31,7 +31,8 @@ const getFilteredListings = async (req, res) => {
 
     console.log("Final query being sent to MongoDB:", query); 
 
-    const items = await Item.find(query).select("-image.data");
+    //const items = await Item.find(query).select("-image.data");
+    const items = await Item.find(query);
     res.json({ success: true, listings: items });
   } catch (err) {
     console.error("getFilteredListings error:", err);

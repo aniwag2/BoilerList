@@ -276,6 +276,10 @@ const Listings = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
+        if (searchQuery.length === 0) {
+            handleClearSearch();
+            return;
+        }
         const result = await apiSearchItems(searchQuery);
         if (result.success) {
             setSearchFilter(true);
@@ -295,10 +299,9 @@ const Listings = () => {
 
     const handleClearSearch = () => {
         setSearchQuery("");
-        setSearchFilter(false);
         setCurrentPage(1);
         setFavoritesPage(1);
-        if (selectedPriceRange || selectedCategory || selectedAdditionalFilter || showMyItemsOnly) {
+        if (filter === "all") {
             fetchFilteredListings(selectedPriceRange, selectedCategory, selectedAdditionalFilter, showMyItemsOnly);
         } else {
             fetchAndSetListings();
@@ -587,7 +590,17 @@ const Listings = () => {
                                             <strong>Description:</strong> {item.description}
                                         </Typography>
                                         {item.isBestOffer && (
-                                            <Chip label="Best Offer" color="primary" variant="outlined" sx={{ mt: 1, color: "white", borderColor: "#FFD700" }} />
+                                            <Tooltip
+                                            title="The seller is open to negotiating the price!"
+                                            arrow
+                                            placement="top"
+                                            >
+                                                <Chip label="Best Offer" 
+                                                       color="primary" 
+                                                       variant="outlined" 
+                                                       sx={{ mt: 1, color: "white", borderColor: "#FFD700", cursor: "pointer" }} 
+                                                />
+                                            </Tooltip>
                                         )}
                                         {item.isUrgent && (
                                             <Tooltip
