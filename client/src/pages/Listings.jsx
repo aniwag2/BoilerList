@@ -651,33 +651,33 @@ const Listings = () => {
                                             Interested: {selected.interestedBuyers.length}
                                         </Typography>
                                     )}
-                                        {selected.imageSrc ? (
-                                        <img
-                                            src={selected.imageSrc}
-                                            alt={selected.name}
-                                            style={{
-                                            width: "100%",
-                                            maxHeight: 250,
-                                            objectFit: "cover",
-                                            borderRadius: "10px",
-                                            border: "2px solid gold",
-                                            }}
-                                        />
-                                        ) : (
-                                        <Box
-                                            sx={{
-                                            height: 250,
-                                            background: "#333",
-                                            color: "#ccc",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            borderRadius: 2,
-                                            }}
-                                        >
-                                            No Image Available
-                                        </Box>
-                                        )}
+{selected.image && selected.image.data ? (
+  <img
+    src={`data:${selected.image.contentType};base64,${selected.image.data}`}
+    alt={selected.name}
+    style={{
+      width: "100%",
+      maxHeight: 250,
+      objectFit: "cover",
+      borderRadius: "10px",
+      border: "2px solid gold",
+    }}
+  />
+) : (
+  <Box
+    sx={{
+      height: 250,
+      background: "#333",
+      color: "#ccc",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 2,
+    }}
+  >
+    No Image Available
+  </Box>
+)}
                                 </Box>
 
                                 <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>{selected.name}</Typography>
