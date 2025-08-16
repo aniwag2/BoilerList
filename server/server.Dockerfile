@@ -16,7 +16,7 @@ COPY . .
 
 # Expose the port your Node.js server listens on (e.g., 5000 or 3000)
 # Check your server/app.js to confirm the port. Let's assume 5000 for now.
-EXPOSE 8080
+EXPOSE 8089
 
 # Command to run your Node.js server
 # Ensure your package.json has a "start" script, e.g., "node app.js"

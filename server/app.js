@@ -54,7 +54,7 @@ app.use("/api/rag", ragRoutes);
 app.use("/api/chat", chatRoutes); // NEW: Use chat routes
 
 // port
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8089;
 
 // listener
 const server = app.listen(port, () =>

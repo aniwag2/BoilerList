@@ -113,7 +113,7 @@ const Listings = () => {
 
     const fetchFilteredListings = useCallback(async (priceRange, category, additionalFilter, showMyItemsOnlyFlag) => {
         try {
-            let url = "https://api.aniwaghray.com/api/filtering";
+            let url = "http://localhost:8089/api/filtering";
             const params = new URLSearchParams();
 
             if (priceRange) {
