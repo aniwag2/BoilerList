@@ -21,10 +21,11 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // middleware
 app.use(morgan("dev"));
-// FIX: Update CORS origin to your domain name
+// FIX: Update CORS to allow the custom 'x-auth-token' header
 app.use(cors({
-    origin: 'https://boilerlist.aniwaghray.com', // Allow your Cloudflare Tunnel domain
+    origin: 'https://boilerlist.aniwaghray.com',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'], // Add 'x-auth-token'
 }));
 app.use(express.json());
 
