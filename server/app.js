@@ -21,12 +21,12 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // middleware
 app.use(morgan("dev"));
-// Configure CORS for credentials to be sent
+// FIX: Update CORS origin to your domain name
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow your frontend origin
-    credentials: true, // Allow cookies, authorization headers, etc.
+    origin: 'https://boilerlist.aniwaghray.com', // Allow your Cloudflare Tunnel domain
+    credentials: true,
 }));
-app.use(express.json()); // Essential for parsing JSON request bodies
+app.use(express.json());
 
 // routes
 const testRoutes = require("./routes/test");
@@ -39,7 +39,7 @@ const userRoutes = require("./routes/user");
 const filteringRoutes = require("./routes/filtering");
 const searchRoutes = require("./routes/search");
 const ragRoutes = require("./routes/rag");
-const chatRoutes = require("./routes/chat"); // NEW: Import chat routes
+const chatRoutes = require("./routes/chat");
 
 app.use("/", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -51,10 +51,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/filtering", filteringRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/rag", ragRoutes);
-app.use("/api/chat", chatRoutes); // NEW: Use chat routes
+app.use("/api/chat", chatRoutes);
 
 // port
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8089;
 
 // listener
 const server = app.listen(port, () =>

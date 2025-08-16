@@ -33,7 +33,7 @@ const Contact = () => {
 		if (!email || !message) return;
 
 		try {
-			const res = await fetch("10.0.0.144:8089/api/feedback", {
+			const res = await fetch("api/feedback", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email, message }),
