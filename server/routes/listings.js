@@ -4,18 +4,21 @@ const router = express.Router();
 const listingController = require('../controllers/listingController');
 const auth = require('../middleware/auth');
 
-// Import Multer components (assuming these are defined in a separate multer config or directly here)
-// Make sure these match what you use in server/routes/upload.js if they are global
 const multer = require('multer');
-const storage = multer.memoryStorage(); // Use memoryStorage for image processing in controller
-const uploadImage = multer({ storage: storage }); // Multer instance for image uploads
+const storage = multer.memoryStorage();
+const uploadImage = multer({ storage: storage });
 
 // Existing routes
 router.get('/getListings', auth, listingController.getListings);
 router.delete('/deleteListing/:id', auth, listingController.deleteListing);
-
-// --- UPDATED ROUTE for editing/updating a listing to handle image ---
-// Add uploadImage.single('image') middleware here to process image updates
 router.put('/updateListing/:id', auth, uploadImage.single('image'), listingController.updateListing);
+
+// --- NEW ROUTES FOR BUYER INTEREST ---
+// Route for a buyer to express interest in a listing
+router.post('/:id/express-interest', auth, listingController.expressInterest);
+
+// Route for a seller to get a list of interested buyers via email
+router.get('/:id/send-interested-buyers-email', auth, listingController.sendInterestedBuyersEmail);
+
 
 module.exports = router;
