@@ -1,5 +1,5 @@
 // client/src/api/user.js
-const API_BASE_URL = '/api'; // Base URL for your API endpoints
+const API_BASE_URL = '10.0.0.144:8089/api'; // Base URL for your API endpoints
 
 // Helper to get auth token from localStorage
 const getAuthToken = () => {
