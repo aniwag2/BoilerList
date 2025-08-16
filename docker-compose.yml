@@ -9,20 +9,17 @@ services:
     ports:
       - "3000:80"
     restart: always
-    depends_on:
-      - api # The client depends on the API to be running
-      # client doesn't actually depend on API being built, but for the sake of starting up the stack, this is fine
   
-  api: # Renamed 'server' to 'api' for clarity
+  api:
     build:
       context: ./server
       dockerfile: server.Dockerfile
     ports:
-      - "8089:8089" # FIX: Changed port to 8089 as requested
+      - "8089:8089"
     environment:
-      # FIX: Use the service name 'mongo' for MongoDB host
+      # FIX: MONGO_URI now points to your Atlas instance, not a local container
       - MONGO_URI=${MONGO_URI}
-      - PORT=8089 # FIX: Updated port to 8089
+      - PORT=8089
       - GMAIL_USER=${GMAIL_USER}
       - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
@@ -30,30 +27,14 @@ services:
       # NEW: Add the ChromaDB URL environment variable
       - CHROMA_URL=http://chroma:8000
     depends_on:
-      - mongo # The API depends on MongoDB
-      - chroma # The API depends on ChromaDB
-    restart: always
-
-  mongo:
-    image: mongo:latest
-    container_name: mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=pass
-    volumes:
-      - mongo-data:/data/db
-    ports:
-      - "27017:27017" # Expose MongoDB port if you need to access it from the host
+      - chroma # API depends on ChromaDB, but not a local MongoDB
     restart: always
 
   chroma:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb
     volumes:
-      - ./chroma-data:/app/chroma # Volume for persistent vector data
+      - ./chroma-data:/app/chroma
     ports:
-      - "8000:8000" # Expose ChromaDB port if you need to access it from the host
+      - "8000:8000"
     restart: always
-
-volumes:
-  mongo-data: # Define a volume for MongoDB persistence
