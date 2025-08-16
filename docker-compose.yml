@@ -1,26 +1,59 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
   client:
     build:
-      context: ./client # Path to your client directory
-      dockerfile: client.Dockerfile # Specify the Dockerfile name
+      context: ./client
+      dockerfile: client.Dockerfile
     ports:
-      - "3000:80" # Map host port 3000 to container port 80 (for Nginx)
-    restart: always # Always restart the container if it stops
-
-  server:
-    build:
-      context: ./server # Path to your server directory
-      dockerfile: server.Dockerfile # Specify the Dockerfile name
-    ports:
-      - "8080:8080" # Map host port 8080 to container port 8080 (for Node.js)
-    environment:
-      # Load environment variables from a .env file
-      # This is where you'll put your MongoDB connection string
-      - MONGO_URI=${MONGO_URI}
-      # Add any other environment variables your server needs (e.g., JWT_SECRET, PORT)
-      - PORT=8080 # Make sure this matches the port your server listens on
+      - "3000:80"
+    restart: always
     depends_on:
-      - client # Ensure client is built before server, though not strictly necessary for runtime
-    restart: always # Always restart the container if it stops
+      - api # The client depends on the API to be running
+      # client doesn't actually depend on API being built, but for the sake of starting up the stack, this is fine
+  
+  api: # Renamed 'server' to 'api' for clarity
+    build:
+      context: ./server
+      dockerfile: server.Dockerfile
+    ports:
+      - "8089:8089" # FIX: Changed port to 8089 as requested
+    environment:
+      # FIX: Use the service name 'mongo' for MongoDB host
+      - MONGO_URI=${MONGO_URI}
+      - PORT=8089 # FIX: Updated port to 8089
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      # NEW: Add the ChromaDB URL environment variable
+      - CHROMA_URL=http://chroma:8000
+    depends_on:
+      - mongo # The API depends on MongoDB
+      - chroma # The API depends on ChromaDB
+    restart: always
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017" # Expose MongoDB port if you need to access it from the host
+    restart: always
+
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    volumes:
+      - ./chroma-data:/app/chroma # Volume for persistent vector data
+    ports:
+      - "8000:8000" # Expose ChromaDB port if you need to access it from the host
+    restart: always
+
+volumes:
+  mongo-data: # Define a volume for MongoDB persistence

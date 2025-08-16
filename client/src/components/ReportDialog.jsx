@@ -20,7 +20,7 @@ const ReportDialog = ({ open, onClose, listingId }) => {
     if (!message) return;
 
     try {
-      await fetch("https://api.aniwaghray.com/api/report", {
+      await fetch("http://localhost:8089/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingId, message }),

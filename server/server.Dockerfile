@@ -1,3 +1,4 @@
+# server/server.Dockerfile
 # Use the official Node.js 20 Alpine image as the base
 FROM node:20-alpine
 
@@ -8,7 +9,7 @@ WORKDIR /app
 # This helps Docker cache layers efficiently if dependencies don't change
 COPY package*.json ./
 
-# Install server dependencies
+# Install server dependencies, including the new ChromaDB packages
 RUN npm install
 
 # Copy the rest of the server application code
@@ -16,7 +17,7 @@ COPY . .
 
 # Expose the port your Node.js server listens on (e.g., 5000 or 3000)
 # Check your server/app.js to confirm the port. Let's assume 5000 for now.
-EXPOSE 8080
+EXPOSE 8089
 
 # Command to run your Node.js server
 # Ensure your package.json has a "start" script, e.g., "node app.js"
