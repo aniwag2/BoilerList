@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client # Path to your client directory
+      dockerfile: client.Dockerfile # Specify the Dockerfile name
+    ports:
+      - "3000:80" # Map host port 3000 to container port 80 (for Nginx)
+    restart: always # Always restart the container if it stops
+
+  server:
+    build:
+      context: ./server # Path to your server directory
+      dockerfile: server.Dockerfile # Specify the Dockerfile name
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080 (for Node.js)
+    environment:
+      # Load environment variables from a .env file
+      # This is where you'll put your MongoDB connection string
+      - MONGO_URI=${MONGO_URI}
+      # Add any other environment variables your server needs (e.g., JWT_SECRET, PORT)
+      - PORT=8080 # Make sure this matches the port your server listens on
+    depends_on:
+      - client # Ensure client is built before server, though not strictly necessary for runtime
+    restart: always # Always restart the container if it stops

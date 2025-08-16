@@ -33,7 +33,7 @@ const Contact = () => {
 		if (!email || !message) return;
 
 		try {
-			const res = await fetch("http://localhost:8080/api/feedback", {
+			const res = await fetch("https://api.aniwaghray.com/api/feedback", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email, message }),

@@ -108,7 +108,7 @@ const UploadItem = () => {
             formData.append("isBestOffer", isBestOffer); // Include checkbox state
             formData.append("isUrgent", isUrgent);       // Include checkbox state
 
-            const uploadRes = await fetch("http://localhost:8080/api/upload/uploadItem", {
+            const uploadRes = await fetch("https://api.aniwaghray.com/api/upload/uploadItem", {
                 method: "POST",
                 headers: {
                     "x-auth-token": user.token,
