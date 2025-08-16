@@ -20,7 +20,7 @@ const ReportDialog = ({ open, onClose, listingId }) => {
     if (!message) return;
 
     try {
-      await fetch("http://localhost:8089/api/report", {
+      await fetch("/api/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingId, message }),
