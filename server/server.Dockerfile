@@ -1,5 +1,11 @@
-# Use the official Node.js 20 Alpine image as the base
-FROM node:20-alpine
+# glibc-based image: onnxruntime-node (via @chroma-core/default-embed) ships a glibc
+# native binary that cannot load on Alpine/musl.
+FROM node:20-slim
+
+# libgomp1 is the OpenMP runtime onnxruntime-node links against.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /app
