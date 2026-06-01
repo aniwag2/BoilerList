@@ -8,7 +8,7 @@ const chatController = require('./chatController'); // NEW: Import chatControlle
 
 const embeddingsModel = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GOOGLE_API_KEY,
-    model: "text-embedding-004",
+    model: "gemini-embedding-001",
 });
 
 const llm = new ChatGoogleGenerativeAI({
