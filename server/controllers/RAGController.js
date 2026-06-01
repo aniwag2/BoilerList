@@ -22,7 +22,7 @@ function initializeVectorStore() {
     const vectorStore = new Chroma(
         embeddingsModel,
         {
-            collectionName: "BoilerListOfficialV1",
+            collectionName: "BoilerListOfficialV2",
             url: process.env.CHROMA_URL || "http://localhost:8000"
         },
     );

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "Profile Page",
+    "pageContent": "Profile page contains your user profile information such as your email and username, along with options to change your password or delete your account. You can reach the profile page by clicking on the `Profile` button on the navbar.",
+    "metadata": { "query": "Tell me about the profile page?", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Delete account",
+    "pageContent": "You can delete your account by clicking on the `Profile` button on the navbar, which will take you to the Profile page. In there, you can delete your account by clicking on the `Delete Account` button.",
+    "metadata": { "query": "How to delete account", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Change password",
+    "pageContent": "You can change your password by clicking on the `Profile` button on the navbar, which will take you to the Profile page. In there, you can change your password using the `Change Password` button, in which you must provide your current password, a new password, and then confirm the new password in order to change it.",
+    "metadata": { "query": "How to change password", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Upload image",
+    "pageContent": "You can upload images by either dragging in a .png, .jpg, or .jpeg file or clicking on the box that states `Drag and drop image here. Or Click to Select One`, in which you can only select .png, .jpg, or .jpeg files. If you try to drag in a non-image file like a .pdf, you will get an error that states `Please select an image`.",
+    "metadata": { "query": "How to upload image", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Report User",
+    "pageContent": "You can't report a user directly right now. Instead, if you'd like to let the team/developers know, please contact them through the `Contact` page or directly through the email `boilerlistpurdue@gmail.com` to let them know about the inappropriate user.",
+    "metadata": { "query": "How to report a user", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Contact Developer",
+    "pageContent": "You can contact the developers/team by going to the `Contact` page, which you can see in the dashboard above. From there, on the left hand side, there is an area called `Contact Us` where you can input your email and thoughts that the developers/team should know. You can also directly contact them by emailing `boilerlistpurdue@gmail.com`.",
+    "metadata": { "query": "How to contact developer/team", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Report Listing and not user",
+    "pageContent": "Currently, you can only report a specific listing. If you notice repeated inappropriate behavior, please contact our team via the form or email.",
+    "metadata": { "query": "Can I report a user", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Favorite an item",
+    "pageContent": "Click the heart icon on any listing to add it to your favorites. You can view all your saved items under the 'My Favorites' tab.",
+    "metadata": { "query": "How to favorite an item", "source": "FAQ" }
+  },
+  {
+    "id": "Edit/Delete",
+    "pageContent": "Go to the `Dashboard` page, find your item, and click on the `Edit` or `Mark as Sold/Delete` button to update or remove it.",
+    "metadata": { "query": "How to edit/delete listing", "source": "FAQ" }
+  },
+  {
+    "id": "Urgent",
+    "pageContent": "Yes, you can select the 'Urgent' checkbox when uploading your item. This helps buyers know you're looking to sell quickly.",
+    "metadata": { "query": "Can I mark an item as urgent", "source": "FAQ" }
+  },
+  {
+    "id": "Best Offer",
+    "pageContent": "If a seller is open to offers, they can mark the item as 'Best Offer.' Feel free to message them and negotiate the price.",
+    "metadata": { "query": "What is the Best Offer label", "source": "FAQ" }
+  },
+  {
+    "id": "Report AN Item",
+    "pageContent": "Click the flag icon on the listing to report it to our moderation team.",
+    "metadata": { "query": "What if I see an inappropriate listing", "source": "FAQ" }
+  },
+  {
+    "id": "Contact a seller",
+    "pageContent": "You can contact a seller if you're interested in an item by first clicking on an item that you're interested in and then clicking `Interest Expressed` in the modal. This sends an email to the seller that you're interested. You can also directly email the seller by clicking on the item that you're interested in and seeing their email in the modal, then emailing them directly.",
+    "metadata": { "query": "How do I contact a seller", "source": "FAQ" }
+  },
+  {
+    "id": "Upload item",
+    "pageContent": "Click `Upload Item` in the navbar and fill out the form to post your item.",
+    "metadata": { "query": "How do I upload an item", "source": "FAQ" }
+  },
+  {
+    "id": "Saving item",
+    "pageContent": "Click the heart icon on any listing to save an item and add it to your favorites. You can view all your saved items under the 'My Favorites' tab.",
+    "metadata": { "query": "How do I save an item", "source": "FAQ" }
+  },
+  {
+    "id": "Search for an item",
+    "pageContent": "Go to the dashboard page and look at the top left, and you will see a search bar with the placeholder `Search for items`. Type in the item you would like to search for and press enter or the search icon. If you would like to clear your search, press the `X` button on the search bar.",
+    "metadata": { "query": "How do I search for an item", "source": "FAQ" }
+  },
+  {
+    "id": "Miscellaneous",
+    "pageContent": "The `miscellaneous` category is a catch-all section for items that don't clearly fit into any of the main categories.",
+    "metadata": { "query": "What is the Miscellaneous category", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "My items",
+    "pageContent": "If you can't find your listing or item, then you can click on the `My items` checkbox in the dashboard and it will only display items that you have uploaded.",
+    "metadata": { "query": "How do I find my items?", "source": "AdditionalInfo" }
+  },
+  {
+    "id": "Create account",
+    "pageContent": "You can create an account by clicking the `Register` button and inputting your Purdue email, username, password, and confirming the password.",
+    "metadata": { "query": "How do I create an account?", "source": "AdditionalInfo" }
+  }
+]
