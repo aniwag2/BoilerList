@@ -1,5 +1,6 @@
 services:
   client:
+    image: awaghray/boilerlist-client:latest # Pulled on the server; built+pushed from the laptop
     build:
       context: ./client # Path to your client directory
       dockerfile: client.Dockerfile # Specify the Dockerfile name
@@ -10,6 +11,7 @@ services:
     restart: always
 
   server:
+    image: awaghray/boilerlist-server:latest # Pulled on the server; built+pushed from the laptop
     build:
       context: ./server # Path to your server directory
       dockerfile: server.Dockerfile # Specify the Dockerfile name
