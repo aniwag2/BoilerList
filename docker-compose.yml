@@ -1,26 +1,33 @@
-version: '3.8'
-
 services:
   client:
     build:
       context: ./client # Path to your client directory
       dockerfile: client.Dockerfile # Specify the Dockerfile name
     ports:
-      - "3000:80" # Map host port 3000 to container port 80 (for Nginx)
-    restart: always # Always restart the container if it stops
+      - "8090:80" # Host port 8090 -> Nginx (point the Cloudflare tunnel here)
+    depends_on:
+      - server
+    restart: always
 
   server:
     build:
       context: ./server # Path to your server directory
       dockerfile: server.Dockerfile # Specify the Dockerfile name
-    ports:
-      - "8089:8089" # Map host port 8089 to container port 8089 (for Node.js)
+    env_file:
+      - ./server/.env # MONGO_URI, JWT_SECRET, GMAIL_*, GOOGLE_API_KEY, etc.
     environment:
-      # Load environment variables from a .env file
-      # This is where you'll put your MongoDB connection string
-      - MONGO_URI=${MONGO_URI}
-      # Add any other environment variables your server needs (e.g., JWT_SECRET, PORT)
-      - PORT=8089 # Make sure this matches the port your server listens on
+      - PORT=8080
+      - CHROMA_URL=http://chroma:8000 # Reach the chroma service over the docker network
+    expose:
+      - "8080" # Internal only; reached via nginx, not published to the host
     depends_on:
-      - client # Ensure client is built before server, though not strictly necessary for runtime
-    restart: always # Always restart the container if it stops
+      - chroma
+    restart: always
+
+  chroma:
+    image: chromadb/chroma:latest
+    volumes:
+      - ./server/chroma-data:/data # Persist the vector store
+    expose:
+      - "8000" # Internal only
+    restart: always

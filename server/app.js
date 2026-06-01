@@ -23,7 +23,10 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use(morgan("dev"));
 // Configure CORS for credentials to be sent
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow your frontend origin
+    origin: [
+        'http://localhost:3000',
+        'https://boilerlist.aniwaghray.com',
+    ],
     credentials: true, // Allow cookies, authorization headers, etc.
 }));
 app.use(express.json()); // Essential for parsing JSON request bodies
@@ -54,7 +57,7 @@ app.use("/api/rag", ragRoutes);
 app.use("/api/chat", chatRoutes); // NEW: Use chat routes
 
 // port
-const port = process.env.PORT || 8089;
+const port = process.env.PORT || 8080;
 
 // listener
 const server = app.listen(port, () =>

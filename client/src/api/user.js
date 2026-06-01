@@ -1,5 +1,5 @@
 // client/src/api/user.js
-const API_BASE_URL = 'http://localhost:8089/api'; // Base URL for your API endpoints
+const API_BASE_URL = '/api'; // Relative path; served same-origin in prod, proxied to backend in dev
 
 // Helper to get auth token from localStorage
 const getAuthToken = () => {

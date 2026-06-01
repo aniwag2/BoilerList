@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//etc/**)",
+      "Bash(where.exe cloudflared *)",
+      "Bash(docker compose *)",
+      "Bash(powershell.exe -NoProfile -Command \"Get-Process docker,'docker compose' -ErrorAction SilentlyContinue | Select-Object Name,Id,StartTime\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8090/)",
+      "Bash(curl -s -i http://localhost:8090/test)",
+      "Bash(powershell.exe -NoProfile -Command \"Resolve-DnsName -Type SRV _mongodb._tcp.boilerlist.u5rba2l.mongodb.net -ErrorAction SilentlyContinue | Select-Object NameTarget,Port\")",
+      "Bash(docker run *)",
+      "Bash(powershell.exe -NoProfile -Command 'try { Resolve-DnsName -Type SRV '\\\\''_mongodb._tcp.boilerlist.u5rba2l.mongodb.net'\\\\'' -ErrorAction Stop | Format-Table -Auto } catch { '\\\\''HOST LOOKUP FAILED: '\\\\'' + $_.Exception.Message }')",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:8090/api/listings/getListings)",
+      "Bash(curl -s http://localhost:8090/api/listings/getListings)",
+      "Bash(git check-ignore *)"
+    ]
+  }
+}

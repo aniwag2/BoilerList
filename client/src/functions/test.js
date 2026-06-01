@@ -1,6 +1,6 @@
 export const getTest = async () => {
     try {
-        const res = await fetch("http://localhost:8089/test", {
+        const res = await fetch("/test", {
             method: "GET",
             headers: {
                 Accept: "application/json",

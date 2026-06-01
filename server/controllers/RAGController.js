@@ -23,7 +23,7 @@ function initializeVectorStore() {
         embeddingsModel,
         {
             collectionName: "BoilerListOfficialV1",
-            url: "http://localhost:8000"
+            url: process.env.CHROMA_URL || "http://localhost:8000"
         },
     );
 
